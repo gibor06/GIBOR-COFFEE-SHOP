@@ -94,6 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser.lastName.charAt(0) + currentUser.firstName.charAt(0)
       ).toUpperCase();
 
+      // Lấy điểm tích lũy
+      const userPoints = (typeof PointsManager !== "undefined") ? PointsManager.getPoints() : 0;
+
       dropdownOverlay.innerHTML =
         '<div class="user-dropdown">' +
         '<div class="user-dropdown-header">' +
@@ -107,6 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
         '<div class="user-dropdown-email">' +
         currentUser.email +
         "</div>" +
+        '<div class="user-dropdown-points"><i class="fas fa-coins"></i> ' +
+        userPoints.toLocaleString("vi-VN") +
+        " điểm</div>" +
         "</div>" +
         "</div>" +
         '<ul class="user-dropdown-menu">' +
@@ -198,8 +204,10 @@ let selectedSize = "";
 let selectedPrice = 0;
 let selectedSugar = "50%";
 let selectedIce = "100%";
+let selectedToppings = []; // [{name, price}]
+let currentCategory = "drink"; // 'drink', 'food', 'topping'
 
-function openPopup(name, img, basePrice) {
+function openPopup(name, img, basePrice, category) {
   const popup = document.getElementById("popup");
   if (!popup) return;
 
@@ -209,11 +217,61 @@ function openPopup(name, img, basePrice) {
 
   // Lưu thông tin sản phẩm hiện tại
   currentProduct = { name, img, basePrice: basePrice || 0 };
+  currentCategory = category || "drink";
   selectedSize = "";
   selectedPrice = 0;
+  popupQuantity = 1;
 
-  // Reset giá khi mở popup
-  document.getElementById("price-value").innerText = "0";
+  // Lấy các phần tử cần ẩn/hiện
+  const sizeOptions = document.getElementById("sizeOptions");
+  const sugarGroup = document.getElementById("sugarOptions");
+  const iceGroup = document.getElementById("iceOptions");
+  const popupDesc = document.querySelector(".popup-desc");
+  const sugarParent = sugarGroup ? sugarGroup.closest(".option-group") : null;
+  const iceParent = iceGroup ? iceGroup.closest(".option-group") : null;
+  const qtySection = document.getElementById("popupQuantity");
+  const qtyValueEl = document.getElementById("popupQtyValue");
+
+  const isFood = currentCategory === "food" || currentCategory === "topping";
+
+  if (isFood) {
+    // Ẩn size, đường, đá, topping cho bánh ngọt / topping
+    if (sizeOptions) sizeOptions.style.display = "none";
+    if (sugarParent) sugarParent.style.display = "none";
+    if (iceParent) iceParent.style.display = "none";
+    if (popupDesc) popupDesc.textContent = "";
+    if (qtySection) qtySection.style.display = "flex";
+    if (qtyValueEl) qtyValueEl.textContent = "1";
+
+    // Ẩn topping cho bánh/topping
+    const toppingGroup = document.getElementById("toppingGroup");
+    if (toppingGroup) toppingGroup.style.display = "none";
+
+    // Tự động set giá = giá gốc
+    selectedSize = "Mặc định";
+    selectedPrice = basePrice;
+    document.getElementById("price-value").innerText = basePrice.toLocaleString("vi-VN");
+  } else {
+    // Hiện lại cho đồ uống
+    if (sizeOptions) sizeOptions.style.display = "";
+    if (sugarParent) sugarParent.style.display = "";
+    if (iceParent) iceParent.style.display = "";
+    if (popupDesc) popupDesc.textContent = "Chọn size để xem giá";
+    if (qtySection) qtySection.style.display = "none";
+
+    // Hiện topping cho đồ uống
+    const toppingGroup = document.getElementById("toppingGroup");
+    if (toppingGroup) toppingGroup.style.display = "";
+
+    // Reset giá khi mở popup
+    document.getElementById("price-value").innerText = "0";
+  }
+
+  // Reset topping
+  selectedToppings = [];
+  document.querySelectorAll(".topping-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
 
   // Tính giá theo size dựa trên giá gốc của sản phẩm
   const priceS = basePrice;
@@ -287,6 +345,48 @@ function selectSize(size, price, btnElement) {
     btn.classList.remove("active");
   });
   if (btnElement) btnElement.classList.add("active");
+
+  // Cập nhật giá hiển thị (size + topping)
+  updatePopupPrice();
+}
+
+// Thay đổi số lượng trong popup (cho bánh/topping)
+var popupQuantity = 1;
+function changePopupQty(delta) {
+  popupQuantity += delta;
+  if (popupQuantity < 1) popupQuantity = 1;
+  const qtyEl = document.getElementById("popupQtyValue");
+  if (qtyEl) qtyEl.textContent = popupQuantity;
+  // Cập nhật giá hiển thị theo số lượng
+  const totalPrice = selectedPrice * popupQuantity;
+  document.getElementById("price-value").innerText = totalPrice.toLocaleString("vi-VN");
+}
+
+// Toggle topping (bật/tắt)
+function toggleTopping(btnElement) {
+  const name = btnElement.dataset.name;
+  const price = parseInt(btnElement.dataset.price);
+
+  const idx = selectedToppings.findIndex((t) => t.name === name);
+  if (idx !== -1) {
+    // Bỏ chọn
+    selectedToppings.splice(idx, 1);
+    btnElement.classList.remove("active");
+  } else {
+    // Chọn
+    selectedToppings.push({ name, price });
+    btnElement.classList.add("active");
+  }
+
+  // Cập nhật giá hiển thị
+  updatePopupPrice();
+}
+
+// Cập nhật giá hiển thị trên popup (đồ uống: size + topping)
+function updatePopupPrice() {
+  const toppingTotal = selectedToppings.reduce((sum, t) => sum + t.price, 0);
+  const total = selectedPrice + toppingTotal;
+  document.getElementById("price-value").innerText = total.toLocaleString("vi-VN");
 }
 
 // Chọn lượng đường / đá
@@ -322,9 +422,10 @@ function selectOption(type, value, btnElement) {
 // ==================== THÊM VÀO GIỎ HÀNG ====================
 function addToCart() {
   const sizeError = document.getElementById("sizeError");
+  const isFood = currentCategory === "food" || currentCategory === "topping";
 
-  // Kiểm tra đã chọn size chưa
-  if (!selectedSize || selectedPrice === 0) {
+  // Kiểm tra đã chọn size chưa (chỉ áp dụng cho đồ uống)
+  if (!isFood && (!selectedSize || selectedPrice === 0)) {
     // Hiện thông báo lỗi bằng popup
     if (sizeError) sizeError.classList.add("show");
     showGiborPopup({
@@ -346,30 +447,37 @@ function addToCart() {
   const noteEl = document.getElementById("popupNote");
   const note = noteEl ? noteEl.value.trim() : "";
 
-  // Kiểm tra sản phẩm đã tồn tại chưa (cùng tên + size + đường + đá + ghi chú)
+  // Kiểm tra sản phẩm đã tồn tại chưa (cùng tên + size + đường + đá + topping + ghi chú)
+  const toppingKey = isFood ? "" : selectedToppings.map((t) => t.name).sort().join(",");
   const existIndex = cart.findIndex(
     (item) =>
       item.name === currentProduct.name &&
       item.size === selectedSize &&
-      item.sugar === selectedSugar &&
-      item.ice === selectedIce &&
+      item.sugar === (isFood ? "" : selectedSugar) &&
+      item.ice === (isFood ? "" : selectedIce) &&
+      (item.toppings || []).map((t) => t.name).sort().join(",") === toppingKey &&
       item.note === note,
   );
 
+  // Tính giá đơn vị (size + topping)
+  const toppingTotal = selectedToppings.reduce((sum, t) => sum + t.price, 0);
+  const unitPrice = selectedPrice + toppingTotal;
+
   if (existIndex !== -1) {
     // Nếu đã có (cùng tùy chọn) thì tăng số lượng
-    cart[existIndex].quantity += 1;
+    cart[existIndex].quantity += isFood ? popupQuantity : 1;
   } else {
     // Nếu chưa có thì thêm mới
     cart.push({
       name: currentProduct.name,
       image: currentProduct.img,
       size: selectedSize,
-      price: selectedPrice,
-      sugar: selectedSugar,
-      ice: selectedIce,
+      price: unitPrice,
+      sugar: isFood ? "" : selectedSugar,
+      ice: isFood ? "" : selectedIce,
+      toppings: isFood ? [] : [...selectedToppings],
       note: note,
-      quantity: 1,
+      quantity: isFood ? popupQuantity : 1,
     });
   }
 
@@ -387,12 +495,15 @@ function addToCart() {
 
   // Đóng popup và hiện toast thông báo
   closePopup();
+  const toastQty = isFood && popupQuantity > 1 ? " x" + popupQuantity : "";
+  const toastSize = isFood ? "" : " (Size " + selectedSize + ")";
   showPopupToast(
     'Đã thêm "' +
       currentProduct.name +
-      '" (Size ' +
-      selectedSize +
-      ") vào giỏ hàng!",
+      '"' +
+      toastQty +
+      toastSize +
+      " vào giỏ hàng!",
   );
 }
 
@@ -555,16 +666,30 @@ function showOrderHistoryPopup() {
       let itemsHTML = "";
       order.items.forEach((item) => {
         const itemTotal = item.price * item.quantity;
+        const isFood = item.size === "Mặc định";
+
+        // Dòng chi tiết
+        let detailParts = [];
+        if (!isFood && item.size) detailParts.push("Size " + item.size);
+        if (item.sugar) detailParts.push("Đường " + item.sugar);
+        if (item.ice) detailParts.push("Đá " + item.ice);
+        if (item.toppings && item.toppings.length > 0) {
+          detailParts.push("Topping: " + item.toppings.map(t => t.name).join(", "));
+        }
+        if (item.note) detailParts.push('Ghi chú: "' + item.note + '"');
+
+        const detailStr = detailParts.join(" · ");
+
         itemsHTML +=
           '<div class="order-card-item">' +
+          '<div class="order-card-item-left">' +
           '<span class="order-card-item-name">' +
           item.name +
           " x" +
           item.quantity +
           "</span>" +
-          '<span class="order-card-item-detail">Size ' +
-          item.size +
-          "</span>" +
+          (detailStr ? '<span class="order-card-item-detail-scroll"><span class="order-card-item-detail-inner">' + detailStr + "</span></span>" : "") +
+          "</div>" +
           '<span class="order-card-item-price">' +
           itemTotal.toLocaleString("vi-VN") +
           "đ</span>" +
@@ -598,6 +723,23 @@ function showOrderHistoryPopup() {
         customerHTML += "</div>";
       }
 
+      // Thông tin chi nhánh (nếu uống tại quán)
+      let branchHTML = "";
+      if (order.branch) {
+        branchHTML = '<div class="order-card-customer">';
+        if (order.branch.name)
+          branchHTML +=
+            '<span><i class="fas fa-store"></i> ' +
+            order.branch.name +
+            "</span>";
+        if (order.branch.address)
+          branchHTML +=
+            '<span><i class="fas fa-map-marker-alt"></i> ' +
+            order.branch.address +
+            "</span>";
+        branchHTML += "</div>";
+      }
+
       contentHTML +=
         '<div class="order-card">' +
         '<div class="order-card-header">' +
@@ -609,6 +751,7 @@ function showOrderHistoryPopup() {
         "</span>" +
         "</div>" +
         customerHTML +
+        branchHTML +
         '<div class="order-card-items">' +
         itemsHTML +
         "</div>" +

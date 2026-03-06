@@ -15,6 +15,8 @@
 
     <link rel="stylesheet" href="css/menu.css" />
     <link rel="stylesheet" href="css/popup.css" />
+    <!-- MOBILE RESPONSIVE -->
+    <link rel="stylesheet" href="css/mobile.css" />
 
     <!-- Font -->
     <link
@@ -232,7 +234,7 @@
         <div class="menu-grid">
           <div
             class="menu-card"
-            onclick="openPopup('Bánh Cheesecake', 'images/menu/cheesecake.jpg', 35000)"
+            onclick="openPopup('Bánh Cheesecake', 'images/menu/cheesecake.jpg', 35000, 'food')"
           >
             <img src="images/menu/cheesecake.jpg" alt="Bánh Cheesecake" />
             <h4>Bánh Cheesecake</h4>
@@ -242,7 +244,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Bánh Cupcake', 'images/menu/cupcake.jpg', 33000)"
+            onclick="openPopup('Bánh Cupcake', 'images/menu/cupcake.jpg', 33000, 'food')"
           >
             <img src="images/menu/cupcake.jpg" alt="Bánh Cupcake" />
             <h4>Bánh Cupcake</h4>
@@ -253,7 +255,7 @@
           <div
             class="menu-card"
             onclick="
-              openPopup('Bánh Bông Lan Kem Tươi', 'images/menu/bonglankemtuoi.jpg', 30000)"
+              openPopup('Bánh Bông Lan Kem Tươi', 'images/menu/bonglankemtuoi.jpg', 30000, 'food')"
           >
             <img src="images/menu/bonglankemtuoi.jpg" alt="Bánh Bông Lan Kem Tươi" />
             <h4>Bánh Bông Lan Kem Tươi</h4>
@@ -263,7 +265,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Bánh Cookie', 'images/menu/cookie.jpg', 36000)"
+            onclick="openPopup('Bánh Cookie', 'images/menu/cookie.jpg', 36000, 'food')"
           >
             <img src="images/menu/cookie.jpg" alt="Bánh Cookie" />
             <h4>Bánh Cookie</h4>
@@ -272,7 +274,7 @@
           </div>
           <div
             class="menu-card"
-            onclick="openPopup('Bánh Brownie Socola', 'images/menu/brownie.jpg', 40000)"
+            onclick="openPopup('Bánh Brownie Socola', 'images/menu/brownie.jpg', 40000, 'food')"
           >
             <img src="images/menu/brownie.jpg" alt="Bánh Brownie Socola" />
             <h4>Bánh Brownie Socola</h4>
@@ -283,7 +285,7 @@
 
         <div
             class="menu-card"
-            onclick="openPopup('Bánh Mousse Chanh Dây', 'images/menu/mousse.jpg', 38000)"
+            onclick="openPopup('Bánh Mousse Chanh Dây', 'images/menu/mousse.jpg', 38000, 'food')"
           >
             <img src="images/menu/mousse.jpg" alt="Bánh Mousse Dâu" />
             <h4>Bánh Mousse Dâu</h4>
@@ -294,7 +296,7 @@
 
         <div
             class="menu-card"
-            onclick="openPopup('Bánh Tiramisu', 'images/menu/tiramisu.jpg', 35000)"
+            onclick="openPopup('Bánh Tiramisu', 'images/menu/tiramisu.jpg', 35000, 'food')"
           >
             <span class="badge"> <i class="icon">🔥</i> BÁN CHẠY NHẤT </span>
             <img src="images/menu/tiramisu.jpg" alt="Bánh Tiramisu" />
@@ -306,7 +308,7 @@
 
         <div
             class="menu-card"
-            onclick="openPopup('Bánh Red Velvet', 'images/menu/redvelvet.jpg', 45000)"
+            onclick="openPopup('Bánh Red Velvet', 'images/menu/redvelvet.jpg', 45000, 'food')"
           >
             <img src="images/menu/redvelvet.jpg" alt="Bánh Red Velvet" />
             <h4>Bánh Red Velvet</h4>
@@ -322,7 +324,7 @@
         <div class="menu-grid">
           <div
             class="menu-card"
-            onclick="openPopup('Thạch trái cây', 'images/menu/thachtraicay.jpg', 10000)"
+            onclick="openPopup('Thạch trái cây', 'images/menu/thachtraicay.jpg', 10000, 'topping')"
           >
             <img src="images/menu/thachtraicay.jpg" alt="Thạch trái cây" />
             <h4>Thạch trái cây</h4>
@@ -332,7 +334,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Trân châu trắng', 'images/menu/3Q.jpg', 10000)"
+            onclick="openPopup('Trân châu trắng', 'images/menu/3Q.jpg', 10000, 'topping')"
           >
             <img src="images/menu/3Q.jpg" alt="Trân châu trắng"/>
             <h4>Trân châu trắng</h4>
@@ -342,7 +344,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Thạch dừa', 'images/menu/thachdua.jpg', 10000)"
+            onclick="openPopup('Thạch dừa', 'images/menu/thachdua.jpg', 10000, 'topping')"
           >
             <img src="images/menu/thachdua.jpg" alt="Thạch dừa" />
             <h4>Thạch dừa</h4>
@@ -352,7 +354,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Thạch matcha', 'images/menu/thachmatcha.jpg', 15000)"
+            onclick="openPopup('Thạch matcha', 'images/menu/thachmatcha.jpg', 15000, 'topping')"
           >
             <img src="images/menu/thachmatcha.jpg" alt="Thạch matcha" />
             <h4>Thạch matcha</h4>
@@ -362,7 +364,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Thạch củ năng', 'images/menu/thachcunang.jpg', 15000)"
+            onclick="openPopup('Thạch củ năng', 'images/menu/thachcunang.jpg', 15000, 'topping')"
           >
             <img src="images/menu/thachcunang.jpg" alt="Thạch củ năng" />
             <h4>Thạch củ năng</h4>
@@ -372,7 +374,7 @@
 
           <div
             class="menu-card"
-            onclick="openPopup('Khoai môn bóng', 'images/menu/khoaimonbong.jpg', 15000)"
+            onclick="openPopup('Khoai môn bóng', 'images/menu/khoaimonbong.jpg', 15000, 'topping')"
           >
             <img src="images/menu/khoaimonbong.jpg" alt="Khoai môn bóng" />
             <h4>Khoai môn bóng</h4>
@@ -420,7 +422,7 @@
 
             <!-- Lượng đường -->
             <div class="option-group">
-              <label class="option-label">🍬 Lượng đường</label>
+              <label class="option-label">Lượng đường</label>
               <div class="option-btns" id="sugarOptions">
                 <button
                   class="option-btn"
@@ -457,7 +459,7 @@
 
             <!-- Lượng đá -->
             <div class="option-group">
-              <label class="option-label">🧊 Lượng đá</label>
+              <label class="option-label">Lượng đá</label>
               <div class="option-btns" id="iceOptions">
                 <button
                   class="option-btn"
@@ -492,15 +494,38 @@
               </div>
             </div>
 
+            <!-- Chọn Topping -->
+            <div class="option-group" id="toppingGroup">
+              <label class="option-label">Topping:</label>
+              <div class="topping-btns" id="toppingOptions">
+                <button class="topping-btn" data-name="Thạch trái cây" data-price="10000" onclick="toggleTopping(this)">Thạch trái cây</button>
+                <button class="topping-btn" data-name="Trân châu trắng" data-price="10000" onclick="toggleTopping(this)">Trân châu trắng</button>
+                <button class="topping-btn" data-name="Thạch dừa" data-price="10000" onclick="toggleTopping(this)">Thạch dừa</button>
+                <button class="topping-btn" data-name="Thạch matcha" data-price="15000" onclick="toggleTopping(this)">Thạch matcha</button>
+                <button class="topping-btn" data-name="Thạch củ năng" data-price="15000" onclick="toggleTopping(this)">Thạch củ năng</button>
+                <button class="topping-btn" data-name="Khoai môn bóng" data-price="15000" onclick="toggleTopping(this)">Khoai môn bóng</button>
+              </div>
+            </div>
+
             <!-- Ghi chú -->
             <div class="option-group">
-              <label class="option-label">📝 Ghi chú</label>
+              <label class="option-label">Ghi chú</label>
               <textarea
                 id="popupNote"
                 class="popup-note"
                 placeholder="VD: Ít đá, thêm sữa, không whipping..."
                 rows="2"
               ></textarea>
+            </div>
+
+            <!-- Số lượng (hiện cho bánh/topping) -->
+            <div class="popup-quantity" id="popupQuantity" style="display: none;">
+              <label class="option-label">Số lượng:</label>
+              <div class="quantity-control">
+                <button class="qty-btn" onclick="changePopupQty(-1)">−</button>
+                <span class="qty-value" id="popupQtyValue">1</span>
+                <button class="qty-btn" onclick="changePopupQty(1)">+</button>
+              </div>
             </div>
 
             <!-- Giá đang chọn -->
@@ -596,6 +621,7 @@
     <!-- Phần JS CHUNG -->
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/mobile.js"></script>
   </body>
 </html>
 <!-- ======================================================================================== 

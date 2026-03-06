@@ -251,6 +251,91 @@ body.dark .option-label {
   box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.2);
 }
 
+/* ===== CHỌN TOPPING ===== */
+.topping-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.topping-btn {
+  padding: 8px 18px;
+  border: 1.5px solid #ccc;
+  border-radius: 50px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text, #2d2424);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.topping-btn:hover {
+  border-color: var(--primary, #4b2c20);
+  background: rgba(212, 163, 115, 0.1);
+}
+
+.topping-btn.active {
+  border-color: var(--primary, #4b2c20);
+  color: var(--primary, #4b2c20);
+  background: rgba(212, 163, 115, 0.12);
+  font-weight: 600;
+}
+
+/* ===== SỐ LƯỢNG (BÁNH/TOPPING) ===== */
+.popup-quantity {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  gap: 16px;
+  margin-bottom: 16px;
+  margin-left: 65px;
+}
+
+.popup-quantity .option-label {
+  font-weight: 600;
+  color: var(--text, #2d2424);
+  font-size: 15px;
+  margin: 0;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qty-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #ccc;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text, #2d2424);
+  transition: all 0.2s ease;
+}
+
+.qty-btn:hover {
+  border-color: var(--primary, #4b2c20);
+  background: var(--bg-light, #faf6f1);
+}
+
+.qty-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary, #4b2c20);
+  min-width: 24px;
+  text-align: center;
+}
+
 /* ===== GIÁ ĐANG CHỌN ===== */
 .popup-price {
   font-size: 18px;

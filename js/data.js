@@ -280,6 +280,76 @@ const UserManager = {
 };
 
 /**
+ * Quản lý điểm tích lũy - lưu vào localStorage theo userId
+ * Quy tắc: 1.000đ = 1 điểm (tích), 100 điểm = 1.000đ (dùng)
+ */
+const PointsManager = {
+  /**
+   * Lấy điểm hiện tại của user đang đăng nhập
+   * @returns {number}
+   */
+  getPoints() {
+    const user = UserManager.getCurrentUser();
+    if (!user) return 0;
+    const allPoints = JSON.parse(localStorage.getItem("gibor_points") || "{}");
+    return allPoints[user.id] || 0;
+  },
+
+  /**
+   * Cập nhật điểm cho user hiện tại
+   * @param {number} points - Số điểm mới
+   */
+  setPoints(points) {
+    const user = UserManager.getCurrentUser();
+    if (!user) return;
+    const allPoints = JSON.parse(localStorage.getItem("gibor_points") || "{}");
+    allPoints[user.id] = Math.max(0, Math.floor(points));
+    localStorage.setItem("gibor_points", JSON.stringify(allPoints));
+  },
+
+  /**
+   * Cộng điểm (sau khi thanh toán)
+   * @param {number} amount - Tổng tiền đơn hàng (VNĐ)
+   * @returns {number} Số điểm được cộng
+   */
+  earnPoints(amount) {
+    const earned = Math.floor(amount / 1000);
+    this.setPoints(this.getPoints() + earned);
+    return earned;
+  },
+
+  /**
+   * Trừ điểm (khi sử dụng)
+   * @param {number} points - Số điểm muốn dùng
+   * @returns {boolean}
+   */
+  usePoints(points) {
+    const current = this.getPoints();
+    if (points > current) return false;
+    this.setPoints(current - points);
+    return true;
+  },
+
+  /**
+   * Tính số tiền giảm từ điểm
+   * @param {number} points - Số điểm dùng
+   * @returns {number} Số tiền giảm (VNĐ)
+   */
+  pointsToMoney(points) {
+    return Math.floor(points / 100) * 1000;
+  },
+
+  /**
+   * Tính số điểm nhận được từ tổng tiền
+   * @param {number} amount - Tổng tiền (VNĐ)
+   * @returns {number} Số điểm
+   */
+  moneyToPoints(amount) {
+    return Math.floor(amount / 1000);
+  },
+};
+
+/**
  * Quản lý lịch sử đơn hàng - lưu vào localStorage
  */
 const OrderManager = {

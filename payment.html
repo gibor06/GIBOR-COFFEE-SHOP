@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="css/style.css" />
     <!-- CSS RIÊNG CHO CHECKOUT -->
     <link rel="stylesheet" href="css/payment.css" />
+    <!-- MOBILE RESPONSIVE -->
+    <link rel="stylesheet" href="css/mobile.css" />
 
     <!-- FONT DÙNG CHUNG -->
     <link
@@ -209,6 +211,35 @@
               <button class="btn-coupon" id="btnCoupon">Áp dụng</button>
             </div>
 
+            <!-- Điểm tích lũy -->
+            <div class="points-section" id="pointsSection" style="display: none;">
+              <div class="points-header">
+                <span class="points-icon"><i class="fa-solid fa-coins"></i></span>
+                <span class="points-title">Điểm tích lũy</span>
+                <span class="points-current" id="pointsCurrent">0 điểm</span>
+              </div>
+              <div class="points-body">
+                <div class="points-input-row">
+                  <label>Dùng điểm:</label>
+                  <input type="number" id="pointsInput" min="0" value="0" placeholder="Nhập số điểm" />
+                  <button class="btn-use-points" id="btnUsePoints">Áp dụng</button>
+                </div>
+                <div class="points-info">
+                  <div class="points-info-row-1">
+                    <span>100 điểm = 1.000 đồng</span>
+                  </div>
+                  <div class="points-info-row">
+                    <span>Điểm nhận được từ đơn này:</span>
+                    <span class="points-earn" id="pointsEarn">+0 điểm</span>
+                  </div>
+                  <div class="points-info-row" id="pointsDiscountRow" style="display: none;">
+                    <span>Giảm giá từ điểm:</span>
+                    <span class="points-discount" id="pointsDiscountAmount">-0đ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Tính tiền -->
             <div class="order-calc">
               <div class="calc-row">
@@ -222,6 +253,10 @@
               <div class="calc-row discount-row" id="discountRow" style="display: none;">
                 <span>Giảm giá</span>
                 <span id="discountAmount">-0đ</span>
+              </div>
+              <div class="calc-row points-discount-calc" id="pointsDiscountCalcRow" style="display: none;">
+                <span>Quy đổi điểm</span>
+                <span id="pointsDiscountCalc" class="points-discount-green">-0đ</span>
               </div>
             </div>
 
@@ -384,6 +419,7 @@
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
     <script src="js/payment.js"></script>
+    <script src="js/mobile.js"></script>
 </body>
 </html>
 

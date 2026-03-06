@@ -143,12 +143,13 @@
 .promo-banner::after {
   content: "GIBOR";
   position: absolute;
-  top: -20px;
+  top: 0;
   left: 20px;
   font-size: 8rem;
   font-weight: 900;
   opacity: 0.05;
   color: white;
+  pointer-events: none;
 }
 
 /* =================================== PHẦN NỀN ======================================== */

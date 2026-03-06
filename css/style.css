@@ -152,6 +152,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 /* LOGO */
@@ -162,6 +163,8 @@ body {
   font-family: var(--font-heading);
   font-size: 1.6rem;
   color: var(--white);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .logo img {
@@ -199,6 +202,8 @@ body {
   display: flex;
   list-style: none;
   gap: 30px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
 }
 
 .nav-links li {
@@ -213,6 +218,7 @@ body {
   letter-spacing: 1px;
   padding: 6px 0;
   transition: color 0.3s ease;
+  white-space: nowrap;
 }
 
 /* Gạch chân chạy */
@@ -242,7 +248,6 @@ body {
     --primary-color
   ); /* Sử dụng đúng tên biến đã khai báo ở :root */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); /* Đổ bóng dùng rgba để chỉnh độ mờ cho đẹp */
-  padding: 10px 5%; /* Thu gọn header lại một chút khi cuộn cho tinh tế */
   transition: all 0.4s ease; /* Giúp hiệu ứng biến đổi mượt mà */
 }
 
@@ -250,6 +255,8 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .icon-btn {
@@ -263,6 +270,8 @@ body {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .icon-btn:hover {
@@ -875,6 +884,19 @@ a {
   margin-top: 2px;
 }
 
+.user-dropdown-points {
+  font-size: 0.8rem;
+  color: #e6a817;
+  font-weight: 600;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.user-dropdown-points i {
+  font-size: 0.75rem;
+}
+
 .user-dropdown-menu {
   list-style: none;
   padding: 0;
@@ -1054,15 +1076,58 @@ a {
 .order-card-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
+  align-items: flex-start;
+  padding: 6px 0;
   font-size: 0.85rem;
   color: var(--text, #2d2424);
-  gap: 12px;
+  gap: 10px;
+  border-bottom: 1px dashed #e8e0d8;
+}
+
+.order-card-item:last-child {
+  border-bottom: none;
+}
+
+.order-card-item-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .order-card-item-name {
-  flex: 1;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.order-card-item-detail-scroll {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #d4a373 transparent;
+  padding-bottom: 2px;
+}
+
+.order-card-item-detail-scroll::-webkit-scrollbar {
+  height: 3px;
+}
+
+.order-card-item-detail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.order-card-item-detail-scroll::-webkit-scrollbar-thumb {
+  background: #d4a373;
+  border-radius: 3px;
+}
+
+.order-card-item-detail-inner {
+  color: #888;
+  font-size: 0.78rem;
+  display: inline-block;
 }
 
 .order-card-item-detail {

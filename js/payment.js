@@ -66,7 +66,8 @@ function renderOrderSummary() {
         </div>
         <div class="order-item-info">
           <div class="order-item-name">${item.name}</div>
-          <div class="order-item-meta">Size ${item.size}${item.sugar ? " | Đường " + item.sugar : ""}${item.ice ? " | Đá " + item.ice : ""}</div>
+          <div class="order-item-meta">${item.size === "Mặc định" ? "" : "Size " + item.size}${item.sugar ? " | Đường " + item.sugar : ""}${item.ice ? " | Đá " + item.ice : ""}${item.toppings && item.toppings.length > 0 ? " | Topping: " + item.toppings.map(t => t.name).join(", ") : ""}</div>
+          ${item.note ? `<div class="order-item-note">Ghi chú: ${item.note}</div>` : ""}
         </div>
         <div class="order-item-price">${formatPrice(total)}</div>
       </div>`;
@@ -82,6 +83,8 @@ function renderOrderSummary() {
 // ===== CẬP NHẬT TỔNG TIỀN =====
 let currentDiscount = 0;
 let isFreeShip = false;
+let pointsDiscount = 0; // Số tiền giảm từ điểm
+let usedPoints = 0; // Số điểm đã dùng
 
 function updateTotals(subtotal) {
   const subEl = document.getElementById("subtotalPrice");
@@ -99,7 +102,7 @@ function updateTotals(subtotal) {
   }
   if (isFreeShip && subtotal > 0) shippingFee = 0;
 
-  const grand = subtotal - currentDiscount + shippingFee;
+  const grand = subtotal - currentDiscount - pointsDiscount + shippingFee;
 
   subEl.textContent = formatPrice(subtotal);
   shipEl.textContent =
@@ -114,6 +117,38 @@ function updateTotals(subtotal) {
     }
   } else {
     discountRow.style.display = "none";
+  }
+
+  // Hiển thị giảm giá từ điểm (trong points-section)
+  const pointsDiscountRow = document.getElementById("pointsDiscountRow");
+  const pointsDiscountEl = document.getElementById("pointsDiscountAmount");
+  if (pointsDiscountRow && pointsDiscountEl) {
+    if (pointsDiscount > 0) {
+      pointsDiscountRow.style.display = "flex";
+      pointsDiscountEl.textContent = "- " + formatPrice(pointsDiscount);
+    } else {
+      pointsDiscountRow.style.display = "none";
+    }
+  }
+
+  // Hiển thị giảm giá từ điểm (trong phần tính tiền - màu xanh)
+  const pCalcRow = document.getElementById("pointsDiscountCalcRow");
+  const pCalcEl = document.getElementById("pointsDiscountCalc");
+  if (pCalcRow && pCalcEl) {
+    if (pointsDiscount > 0) {
+      pCalcRow.style.display = "flex";
+      pCalcEl.textContent = "- " + formatPrice(pointsDiscount);
+    } else {
+      pCalcRow.style.display = "none";
+    }
+  }
+
+  // Cập nhật điểm nhận được (chỉ tính trên tiền hàng, KHÔNG tính phí ship)
+  const productTotal = Math.max(0, subtotal - currentDiscount - pointsDiscount);
+  const earnEl = document.getElementById("pointsEarn");
+  if (earnEl && typeof PointsManager !== "undefined") {
+    const earnedPoints = PointsManager.moneyToPoints(productTotal);
+    earnEl.textContent = "+" + earnedPoints.toLocaleString("vi-VN") + " điểm";
   }
 
   grandEl.textContent = formatPrice(Math.max(0, grand));
@@ -163,6 +198,92 @@ function applyCoupon() {
   updateTotals(subtotal);
 }
 
+// ===== ĐIỂM TÍCH LŨY =====
+function initPoints() {
+  const section = document.getElementById("pointsSection");
+  if (!section) return;
+
+  // Chỉ hiện khi đã đăng nhập
+  if (typeof UserManager === "undefined" || !UserManager.isLoggedIn() || typeof PointsManager === "undefined") {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "block";
+
+  // Hiển điểm hiện tại
+  const currentPoints = PointsManager.getPoints();
+  const currentEl = document.getElementById("pointsCurrent");
+  if (currentEl) currentEl.textContent = currentPoints.toLocaleString("vi-VN") + " điểm";
+
+  // Set max cho input
+  const input = document.getElementById("pointsInput");
+  if (input) {
+    input.max = currentPoints;
+    input.value = 0;
+  }
+
+  // Cập nhật điểm nhận được
+  const cart = getCart();
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const earnEl = document.getElementById("pointsEarn");
+  if (earnEl) {
+    const earned = PointsManager.moneyToPoints(subtotal);
+    earnEl.textContent = "+" + earned.toLocaleString("vi-VN") + " điểm";
+  }
+
+  // Sự kiện nút áp dụng điểm
+  const btn = document.getElementById("btnUsePoints");
+  if (btn) btn.addEventListener("click", applyPoints);
+}
+
+function applyPoints() {
+  if (typeof PointsManager === "undefined") return;
+
+  const input = document.getElementById("pointsInput");
+  const points = parseInt(input.value) || 0;
+  const currentPoints = PointsManager.getPoints();
+
+  if (points < 0) {
+    showToast("Số điểm không hợp lệ!");
+    return;
+  }
+
+  if (points > currentPoints) {
+    showToast("Bạn không đủ điểm! Hiện có: " + currentPoints.toLocaleString("vi-VN") + " điểm.");
+    input.value = currentPoints;
+    return;
+  }
+
+  // Tính số tiền giảm
+  const cart = getCart();
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  let discount = PointsManager.pointsToMoney(points);
+
+  // Không cho giảm vượt quá tổng tiền
+  if (discount > subtotal - currentDiscount) {
+    discount = subtotal - currentDiscount;
+    // Tính ngược số điểm cần dùng
+    const actualPoints = Math.ceil(discount / 10);
+    input.value = actualPoints;
+    usedPoints = actualPoints;
+    pointsDiscount = PointsManager.pointsToMoney(actualPoints);
+  } else {
+    usedPoints = points;
+    pointsDiscount = discount;
+  }
+
+  if (points === 0) {
+    pointsDiscount = 0;
+    usedPoints = 0;
+    showToast("Đã hủy sử dụng điểm.");
+  } else {
+    showToast(`Áp dụng ${usedPoints.toLocaleString("vi-VN")} điểm, giảm ${formatPrice(pointsDiscount)}!`);
+  }
+
+  updateTotals(subtotal);
+}
+
 // ===== CHỌN PHƯƠNG THỨC THANH TOÁN =====
 let selectedPayment = "cod"; // Biến lưu phương thức thanh toán: 'cod' hoặc 'banking'
 
@@ -190,10 +311,10 @@ function selectPayment(method) {
   if (method === "banking") {
     // Hiện QR thanh toán
     if (bankInfo) bankInfo.style.display = "block";
-    // Đổi text nút thành "XÁC NHẬN ĐÃ THANH TOÁN"
+    // Đổi text nút thành "ĐẶ HÀNG"
     if (btnPlace)
       btnPlace.innerHTML =
-        '<i class="fa-solid fa-credit-card"></i> XÁC NHẬN ĐÃ THANH TOÁN';
+        '<i class="fa-solid fa-credit-card"></i> ĐẶT HÀNG';
     // Cập nhật QR code với số tiền hiện tại
     updateQRCode();
   } else {
@@ -561,29 +682,64 @@ async function placeOrder() {
     const ckPhoneEl = document.getElementById("ckPhone");
     const ckEmailEl = document.getElementById("ckEmail");
     const ckAddressEl = document.getElementById("ckAddress");
+    const ckCityEl = document.getElementById("ckCity");
+    const ckWardEl = document.getElementById("ckWard");
+
+    // Ghép địa chỉ đầy đủ: số nhà + phường/xã + tỉnh/thành phố
+    let fullAddress = "";
+    if (selectedShipping === "delivery") {
+      const streetAddr = ckAddressEl ? ckAddressEl.value.trim() : "";
+      const wardName = ckWardEl ? ckWardEl.options[ckWardEl.selectedIndex]?.text : "";
+      const cityName = ckCityEl ? ckCityEl.options[ckCityEl.selectedIndex]?.text : "";
+      const parts = [streetAddr, wardName, cityName].filter(
+        (p) => p && p !== "--- Chọn ---"
+      );
+      fullAddress = parts.join(", ");
+    }
+
     OrderManager.saveOrder({
       code: code,
       customer: {
         name: ckNameEl ? ckNameEl.value.trim() : "",
         phone: ckPhoneEl ? ckPhoneEl.value.trim() : "",
         email: ckEmailEl ? ckEmailEl.value.trim() : "",
-        address: ckAddressEl ? ckAddressEl.value.trim() : "",
+        address: fullAddress,
       },
       items: cart.map((i) => ({
         name: i.name,
         size: i.size,
         price: i.price,
         quantity: i.quantity,
-        sugar: i.sugar,
-        ice: i.ice,
+        sugar: i.sugar || "",
+        ice: i.ice || "",
+        toppings: i.toppings || [],
+        note: i.note || "",
       })),
-      total: subtotal,
+      total: Math.max(0, subtotal - currentDiscount - pointsDiscount),
+      subtotal: subtotal,
+      couponDiscount: currentDiscount,
+      pointsUsed: usedPoints,
+      pointsDiscount: pointsDiscount,
       payment:
         selectedPayment === "banking"
           ? "Chuyển khoản"
           : "Thanh toán khi nhận hàng",
       shipping: selectedShipping === "delivery" ? "Giao hàng" : "Uống tại quán",
+      branch: selectedBranch
+        ? { name: selectedBranch.name, address: selectedBranch.address }
+        : null,
     });
+
+    // Xử lý điểm tích lũy
+    if (typeof PointsManager !== "undefined") {
+      // Trừ điểm đã dùng
+      if (usedPoints > 0) {
+        PointsManager.usePoints(usedPoints);
+      }
+      // Cộng điểm mới (chỉ tính trên tiền hàng, không tính phí ship)
+      const productOnly = Math.max(0, subtotal - currentDiscount - pointsDiscount);
+      const earnedPoints = PointsManager.earnPoints(productOnly);
+    }
   }
 
   // Xóa giỏ hàng
@@ -971,12 +1127,18 @@ function updateWards() {
   // Xóa tất cả các option cũ (trừ option đầu tiên)
   wardSelect.innerHTML = '<option value="">--- Chọn ---</option>';
 
-  if (!selectedCity) return;
+  if (!selectedCity) {
+    refreshSearchable("ckWard");
+    return;
+  }
 
   // Lấy danh sách phường/xã cho tỉnh đã chọn
   const wards = WARD_NAMES[selectedCity];
 
-  if (!wards) return;
+  if (!wards) {
+    refreshSearchable("ckWard");
+    return;
+  }
 
   // Thêm các option mới
   wards.forEach((ward) => {
@@ -985,12 +1147,165 @@ function updateWards() {
     option.textContent = ward;
     wardSelect.appendChild(option);
   });
+
+  // Cập nhật giao diện tìm kiếm
+  refreshSearchable("ckWard");
 }
 
 // ===== ĐÓNG POPUP =====
 function closeSuccess() {
   const overlay = document.getElementById("successOverlay");
   if (overlay) overlay.classList.remove("show");
+}
+
+// ===== TÌM KIẾM PHƯỜNG/XÃ, TỈNH/THÀNH PHỐ =====
+function makeSearchable(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  // Ẩn select gốc
+  select.style.display = "none";
+
+  // Tạo wrapper
+  const wrapper = document.createElement("div");
+  wrapper.className = "ss-wrapper";
+  wrapper.dataset.for = selectId;
+
+  // Nút hiển thị giá trị đã chọn
+  const display = document.createElement("div");
+  display.className = "ss-display";
+  display.innerHTML = '<span class="ss-display-text">--- Chọn ---</span><i class="fa-solid fa-magnifying-glass-location ss-arrow"></i>';
+
+  // Dropdown
+  const dropdown = document.createElement("div");
+  dropdown.className = "ss-dropdown";
+
+  // Ô tìm kiếm
+  const search = document.createElement("input");
+  search.type = "text";
+  search.className = "ss-search";
+  search.placeholder = "Tìm kiếm";
+
+  // Danh sách kết quả
+  const optList = document.createElement("div");
+  optList.className = "ss-options";
+
+  dropdown.appendChild(search);
+  dropdown.appendChild(optList);
+  wrapper.appendChild(display);
+  wrapper.appendChild(dropdown);
+
+  // Chèn sau select
+  select.parentElement.insertBefore(wrapper, select.nextSibling);
+
+  // Dựng danh sách options
+  refreshSearchable(selectId);
+
+  // Mở/đóng dropdown
+  display.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // Đóng các dropdown khác
+    document.querySelectorAll(".ss-wrapper.open").forEach((w) => {
+      if (w !== wrapper) w.classList.remove("open");
+    });
+    wrapper.classList.toggle("open");
+    if (wrapper.classList.contains("open")) {
+      search.value = "";
+      filterSSOptions(optList, "");
+      setTimeout(() => search.focus(), 50);
+    }
+  });
+
+  // Tìm kiếm
+  search.addEventListener("input", () => {
+    filterSSOptions(optList, search.value);
+  });
+
+  // Không đóng khi click trong dropdown
+  dropdown.addEventListener("click", (e) => e.stopPropagation());
+
+  // Click ngoài → đóng
+  document.addEventListener("click", () => {
+    wrapper.classList.remove("open");
+  });
+}
+
+function refreshSearchable(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  const wrapper = select.parentElement.querySelector('.ss-wrapper[data-for="' + selectId + '"]');
+  if (!wrapper) return;
+
+  const optList = wrapper.querySelector(".ss-options");
+  const displayText = wrapper.querySelector(".ss-display-text");
+  optList.innerHTML = "";
+
+  let hasOptions = false;
+
+  Array.from(select.options).forEach((opt) => {
+    if (!opt.value) return; // Bỏ placeholder
+    hasOptions = true;
+    const div = document.createElement("div");
+    div.className = "ss-option";
+    div.textContent = opt.textContent;
+    div.dataset.value = opt.value;
+
+    div.addEventListener("click", () => {
+      select.value = opt.value;
+      select.dispatchEvent(new Event("change"));
+      displayText.textContent = opt.textContent;
+      wrapper.querySelector(".ss-display").classList.add("selected");
+      wrapper.classList.remove("open");
+      // Highlight
+      optList.querySelectorAll(".ss-option").forEach((o) => o.classList.remove("active"));
+      div.classList.add("active");
+    });
+
+    optList.appendChild(div);
+  });
+
+  // Reset nếu select chưa chọn hoặc không có options
+  if (!select.value || !hasOptions) {
+    displayText.textContent = "--- Chọn ---";
+    wrapper.querySelector(".ss-display").classList.remove("selected");
+  }
+}
+
+function filterSSOptions(optList, query) {
+  const q = query
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const options = optList.querySelectorAll(".ss-option");
+  let visibleCount = 0;
+
+  options.forEach((opt) => {
+    const text = opt.textContent
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    if (!q || text.includes(q)) {
+      opt.style.display = "";
+      visibleCount++;
+    } else {
+      opt.style.display = "none";
+    }
+  });
+
+  // Hiển thị thông báo nếu không tìm thấy
+  let noResult = optList.querySelector(".ss-no-result");
+  if (visibleCount === 0) {
+    if (!noResult) {
+      noResult = document.createElement("div");
+      noResult.className = "ss-no-result";
+      noResult.textContent = "Không tìm thấy kết quả";
+      optList.appendChild(noResult);
+    }
+    noResult.style.display = "";
+  } else if (noResult) {
+    noResult.style.display = "none";
+  }
 }
 
 // ===== SỰ KIỆN KHI TẢI TRANG =====
@@ -1042,6 +1357,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Khởi tạo trạng thái mặc định
   selectShipping("delivery"); // Giao hàng tận nơi
   selectPayment("cod"); // Thanh toán khi giao hàng
+  initPoints(); // Khởi tạo điểm tích lũy
+
+  // Khởi tạo tìm kiếm cho Tỉnh/TP và Phường/Xã
+  makeSearchable("ckCity");
+  makeSearchable("ckWard");
 
   // Chọn khu vực chi nhánh
   const branchCity = document.getElementById("branchCity");

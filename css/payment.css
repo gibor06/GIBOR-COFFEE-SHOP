@@ -536,6 +536,13 @@ body.dark {
   margin-top: 2px;
 }
 
+.order-item-note {
+  font-size: 11px;
+  color: #888;
+  margin-top: 3px;
+  font-style: italic;
+}
+
 .order-item-price {
   font-weight: 700;
   font-size: 14px;
@@ -1078,6 +1085,225 @@ body.dark {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* ===== ĐIỂM TÍCH LŨY ===== */
+.points-section {
+  background: #fffaf0;
+  border: 1px solid #eed9a7;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.points-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.points-header i {
+  color: #e6a817;
+  font-size: 1.2rem;
+}
+.points-header span:first-of-type {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+.points-current {
+  margin-left: auto;
+  background: #fff3cd;
+  color: #856404;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid #eed9a7;
+}
+.points-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.points-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.points-input-row input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.points-input-row input:focus {
+  border-color: var(--primary-color);
+}
+.btn-use-points {
+  padding: 8px 16px;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-use-points:hover {
+  opacity: 0.85;
+}
+.points-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.85rem;
+}
+.points-info-row-1 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #555;
+  font-weight: bold;
+}
+.points-info-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #555;
+}
+.points-info-row.points-earn {
+  color: #28a745;
+  font-weight: 600;
+}
+.points-info-row.points-discount {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* Dòng giảm từ điểm trong phần tính tiền */
+.points-discount-calc {
+  color: #28a745;
+}
+.points-discount-green {
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* ===== SEARCHABLE SELECT (TÌM KIẾM PHƯỜNG/XÃ, TỈNH/TP) ===== */
+.ss-wrapper {
+  position: relative;
+  width: 100%;
+}
+.ss-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #999;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+.ss-display:hover {
+  border-color: var(--primary-color);
+}
+.ss-display.selected {
+  color: #333;
+}
+.ss-display.selected .ss-display-text {
+  font-weight: 400;
+}
+.ss-arrow {
+  font-size: 0.75rem;
+  color: #999;
+  transition: transform 0.2s;
+}
+.ss-wrapper.open .ss-arrow {
+  transform: rotate(180deg);
+}
+.ss-wrapper.open .ss-display {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(193, 131, 56, 0.12);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.ss-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--primary-color);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  overflow: hidden;
+}
+.ss-wrapper.open .ss-dropdown {
+  display: block;
+  animation: ssSlideDown 0.2s ease;
+}
+@keyframes ssSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ss-search {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  background: #fafafa;
+}
+.ss-search::placeholder {
+  color: #aaa;
+}
+.ss-options {
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.ss-options::-webkit-scrollbar {
+  width: 6px;
+}
+.ss-options::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.ss-option {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+  transition: background 0.15s;
+}
+.ss-option:hover {
+  background: #fff5e6;
+}
+.ss-option.active {
+  background: #fff0d6;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.ss-no-result {
+  padding: 14px;
+  text-align: center;
+  color: #999;
+  font-size: 0.85rem;
+  font-style: italic;
 }
 
 /* 

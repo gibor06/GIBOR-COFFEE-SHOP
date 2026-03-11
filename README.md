@@ -22,10 +22,10 @@ Thông tin hệ thống:
 
 | STT | Thành viên | Vai trò | Công việc |
 |----|----|----|----|
-| 1 | **Trần Gia Bảo** | **Leader – Frontend Developer** | Thiết kế giao diện, trang chủ, responsive |
-| 2 | Trần Dương Gia Bảo | Core Developer | Cart System, Payment System |
-| 3 | Nguyễn Thế Anh | Backend Integration | Firebase Authentication |
-| 4 | Nguyễn Hoàng Bảo | Frontend Developer | Menu Page & Popup |
+| 1 | **Trần Gia Bảo** | **Leader – Frontend Developer** | `index.html`, `about.html`, `contact.html`, `style.css`, `home.css`, `about.css`, `contact.css`, `mobile.css`, `main.js`, `about.js`, `contact.js`, `mobile.js` |
+| 2 | Trần Dương Gia Bảo | Core Developer | `data.js`, `cart.js`, `cart.html`, `payment.html`, `payment.js`, `cart.css`, `payment.css` (phần core), dark mode CSS, hệ thống điểm tích lũy, quản lý đơn hàng |
+| 3 | Nguyễn Thế Anh | Firebase Integration | `login.html`, `register.html`, `loginregister.js`, `firebase.js`, `login.css`, `register.css` |
+| 4 | Nguyễn Hoàng Bảo | Frontend Developer | `menu.html`, `menu.css`, `popup.css`, phần popup trong `main.js` |
 
 ---
 

@@ -523,8 +523,8 @@ body.dark .add-cart {
 /* Khung chứa banner */
 .popup-content-ads {
   background: white;
-  width: 50%;
-  max-width: 75%;
+  width: 40%;
+  max-width: 60%;
   border-radius: 20px;
   overflow: hidden;
   position: relative;
@@ -537,18 +537,20 @@ body.dark .add-cart {
 @media (max-width: 1024px) {
   .popup-content-ads {
     width: 70%;
-    max-width: 90%;
+    max-width: 80%;
   }
 }
 
 @media (max-width: 768px) {
   .popup-content-ads {
-    width: 90%;
+    width: 95%;
     max-width: 95%;
-  }
-  .popup-content-ads {
     border-radius: 14px;
   }
+}
+
+.popup-overlay-ads.show .popup-content-ads {
+  transform: scale(1);
 }
 
 /* Nút đóng (X) */

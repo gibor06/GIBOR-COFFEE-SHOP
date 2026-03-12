@@ -6,6 +6,7 @@
 
   // ===== CONSTANTS =====
   const MOBILE_BP = 768;
+  const IS_ANDROID = /Android/i.test(navigator.userAgent || '');
   
   // Page detection
   const path = location.pathname.replace(/\\/g, '/');
@@ -25,6 +26,10 @@
   }
 
   function setBodyScrollLock(locked) {
+    if (IS_ANDROID) {
+      document.body.classList.remove('m-lock-scroll');
+      return;
+    }
     document.body.classList.toggle('m-lock-scroll', !!locked);
   }
 
@@ -32,6 +37,9 @@
     const overlay = document.getElementById('m-drawer-overlay');
     const shouldLock = !!(overlay && overlay.classList.contains('open') && isMobile());
     setBodyScrollLock(shouldLock);
+    if (overlay) {
+      overlay.style.pointerEvents = shouldLock ? 'auto' : 'none';
+    }
   }
 
   function cleanupDesktopArtifacts() {
@@ -120,6 +128,7 @@
     const setDrawerState = (open) => {
       overlay.classList.toggle('open', open);
       setBodyScrollLock(open && isMobile());
+      overlay.style.pointerEvents = open ? 'auto' : 'none';
     };
     const closeDrawer = () => setDrawerState(false);
     overlay.querySelector('.m-drawer-close').addEventListener('click', closeDrawer);
@@ -392,6 +401,9 @@
 
   // ===== INIT =====
   function init() {
+    // Ensure stale lock class is never carried across history restores.
+    setBodyScrollLock(false);
+
     let mobileMode = isMobile();
 
     syncHeaderHeightVar();

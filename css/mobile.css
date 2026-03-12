@@ -30,7 +30,6 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
-    overflow-x: hidden;
   }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -38,6 +37,7 @@
     padding-bottom: calc(var(--m-bottom-nav-h) + var(--m-safe-bottom) + 8px);
     overflow-x: hidden;
     overscroll-behavior-y: contain;
+    touch-action: pan-y;
   }
   body.m-lock-scroll {
     overflow: hidden;
@@ -160,10 +160,12 @@
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s;
     overflow: hidden;
+    pointer-events: none;
   }
   .m-drawer-overlay.open {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
   }
   .m-drawer {
     position: fixed;

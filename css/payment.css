@@ -48,11 +48,22 @@ body.dark {
   align-items: flex-start;
 }
 
+.cart-empty-mini {
+  text-align: center;
+  opacity: 0.6;
+  padding: 25px 0;
+}
+
+.cart-empty-mini i {
+  font-size: 30px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ===== CỘT TRÁI: THÔNG TIN ===== */
 .checkout-left {
-  flex: 1.2;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex: 1.5;
+  min-width: 320px;
 }
 
 .checkout-right {

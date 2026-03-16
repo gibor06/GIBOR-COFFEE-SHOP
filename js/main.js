@@ -334,17 +334,17 @@ function openPopup(name, img, basePrice, category) {
   const btnM = document.getElementById("btn-size-m");
   const btnL = document.getElementById("btn-size-l");
   if (btnS)
-    btnS.onclick = function () {
+    btnS.addEventListener("click", function () {
       selectSize("S", priceS, this);
-    };
+    });
   if (btnM)
-    btnM.onclick = function () {
+    btnM.addEventListener("click", function () {
       selectSize("M", priceM, this);
-    };
+    });
   if (btnL)
-    btnL.onclick = function () {
+    btnL.addEventListener("click", function () {
       selectSize("L", priceL, this);
-    };
+    });
 
   // Reset active class trên các nút size
   document.querySelectorAll(".size-options button").forEach((btn) => {

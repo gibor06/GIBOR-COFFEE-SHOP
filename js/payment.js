@@ -47,10 +47,10 @@ function renderOrderSummary() {
 
   if (cart.length === 0) {
     orderItems.innerHTML = `
-      <p style="text-align:center; opacity:0.6; padding:25px 0;">
-        <i class="fas fa-shopping-cart" style="font-size:30px; display:block; margin-bottom:8px;"></i>
-        Giỏ hàng trống
-      </p>`;
+      <div class="cart-empty-mini">
+        <i class="fas fa-shopping-cart"></i>
+        <p>Giỏ hàng trống</p>
+      </div>`;
     updateTotals(0);
     return;
   }
@@ -66,7 +66,8 @@ function renderOrderSummary() {
           : [];
     const metaParts = [];
     if (comboItems.length > 0) metaParts.push("Gồm: " + comboItems.join(" + "));
-    if (item.size && item.size !== "Mặc định") metaParts.push("Size " + item.size);
+    if (item.size && item.size !== "Mặc định")
+      metaParts.push("Size " + item.size);
     if (item.sugar) metaParts.push("Đường " + item.sugar);
     if (item.ice) metaParts.push("Đá " + item.ice);
     if (item.toppings && item.toppings.length > 0) {
@@ -123,40 +124,31 @@ function updateTotals(subtotal) {
   shipEl.textContent =
     shippingFee === 0 && subtotal > 0 ? "Miễn phí" : formatPrice(shippingFee);
 
-  if (currentDiscount > 0 || isFreeShip) {
+  // Hiển thị giảm giá từ coupon
+  if (currentDiscount > 0) {
     discountRow.style.display = "flex";
-    if (isFreeShip && currentDiscount === 0) {
-      discountEl.textContent = "Miễn phí vận chuyển";
-    } else {
-      discountEl.textContent = "- " + formatPrice(currentDiscount);
-    }
+    discountEl.textContent = "- " + formatPrice(currentDiscount);
   } else {
+    // Ẩn dòng giảm giá nếu chỉ có freeship (đã thể hiện ở phí ship)
     discountRow.style.display = "none";
   }
 
-  // Hiển thị giảm giá từ điểm (trong points-section)
-  const pointsDiscountRow = document.getElementById("pointsDiscountRow");
-  const pointsDiscountEl = document.getElementById("pointsDiscountAmount");
-  if (pointsDiscountRow && pointsDiscountEl) {
-    if (pointsDiscount > 0) {
-      pointsDiscountRow.style.display = "flex";
-      pointsDiscountEl.textContent = "- " + formatPrice(pointsDiscount);
-    } else {
-      pointsDiscountRow.style.display = "none";
+  // Hiển thị giảm giá từ điểm (trong points-section và phần tính tiền)
+  [
+    { rowId: "pointsDiscountRow", elId: "pointsDiscountAmount" },
+    { rowId: "pointsDiscountCalcRow", elId: "pointsDiscountCalc" },
+  ].forEach(({ rowId, elId }) => {
+    const row = document.getElementById(rowId);
+    const el = document.getElementById(elId);
+    if (row && el) {
+      if (pointsDiscount > 0) {
+        row.style.display = "flex";
+        el.textContent = "- " + formatPrice(pointsDiscount);
+      } else {
+        row.style.display = "none";
+      }
     }
-  }
-
-  // Hiển thị giảm giá từ điểm (trong phần tính tiền - màu xanh)
-  const pCalcRow = document.getElementById("pointsDiscountCalcRow");
-  const pCalcEl = document.getElementById("pointsDiscountCalc");
-  if (pCalcRow && pCalcEl) {
-    if (pointsDiscount > 0) {
-      pCalcRow.style.display = "flex";
-      pCalcEl.textContent = "- " + formatPrice(pointsDiscount);
-    } else {
-      pCalcRow.style.display = "none";
-    }
-  }
+  });
 
   // Cập nhật điểm nhận được (chỉ tính trên tiền hàng, KHÔNG tính phí ship)
   const productTotal = Math.max(0, subtotal - currentDiscount - pointsDiscount);
@@ -224,11 +216,11 @@ function initPoints() {
     !UserManager.isLoggedIn() ||
     typeof PointsManager === "undefined"
   ) {
-    section.style.display = "none";
+    section.classList.add("hidden");
     return;
   }
 
-  section.style.display = "block";
+  section.classList.remove("hidden");
 
   // Hiển điểm hiện tại
   const currentPoints = PointsManager.getPoints();
@@ -334,17 +326,17 @@ function selectPayment(method) {
   const bankInfo = document.getElementById("bankingInfo");
   const btnPlace = document.getElementById("btnPlaceOrder");
 
+  if (bankInfo) {
+    bankInfo.classList.toggle("hidden", method !== "banking");
+  }
+
   if (method === "banking") {
-    // Hiện QR thanh toán
-    if (bankInfo) bankInfo.style.display = "block";
     // Đổi text nút thành "ĐẶ HÀNG"
     if (btnPlace)
       btnPlace.innerHTML = '<i class="fa-solid fa-credit-card"></i> ĐẶT HÀNG';
     // Cập nhật QR code với số tiền hiện tại
     updateQRCode();
   } else {
-    // Ẩn QR thanh toán khi chọn COD
-    if (bankInfo) bankInfo.style.display = "none";
     // Đổi text nút về "ĐẶT HÀNG"
     if (btnPlace)
       btnPlace.innerHTML = '<i class="fa-solid fa-check"></i> ĐẶT HÀNG';

@@ -31,6 +31,33 @@
   }
 }
 
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .promo-banner {
   margin: 60px 10%;
   background: linear-gradient(135deg, var(--primary) 0%, #2d1a13 100%);
@@ -62,6 +89,18 @@
   animation: shine 4s infinite;
 }
 
+.promo-banner::after {
+  content: "GIBOR";
+  position: absolute;
+  top: 0;
+  left: 20px;
+  font-size: 8rem;
+  font-weight: 900;
+  opacity: 0.05;
+  color: white;
+  pointer-events: none;
+}
+
 .promo-content {
   flex: 1.2;
   padding: 60px;
@@ -81,27 +120,15 @@
   animation: bounce 2s infinite;
 }
 
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-5px);
-  }
-  60% {
-    transform: translateY(-3px);
-  }
-}
-
 .promo-content h2 {
   font-family: var(--font-heading);
   font-size: 3rem;
   margin-bottom: 15px;
   line-height: 1.2;
+}
+
+.promo-content h2 span {
+  color: var(--accent);
 }
 
 .promo-content p {
@@ -140,18 +167,6 @@
   transform: scale(1.1);
 }
 
-.promo-banner::after {
-  content: "GIBOR";
-  position: absolute;
-  top: 0;
-  left: 20px;
-  font-size: 8rem;
-  font-weight: 900;
-  opacity: 0.05;
-  color: white;
-  pointer-events: none;
-}
-
 /* =================================== PHẦN NỀN ======================================== */
 
 /* PHẦN NỀN TỐI */
@@ -160,32 +175,61 @@ body.dark {
   --text: #f5f5f5;
   --navbar: rgba(75, 44, 32, 0.95);
   --card: #1e1e1e;
-  .intro h2 {
-    font-family: var(--font-heading);
-    font-size: 3rem;
-    color: var(--primary);
-    margin-bottom: 20px;
-    color: var(--accent);
-  }
 }
 
-.hero {
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url("../images/banner/hero-bg.jpg") center/cover no-repeat;
-  height: 100vh;
+body.dark .intro h2 {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+body.dark .intro .featured-icons {
   display: flex;
   justify-content: center;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+
+body.dark .intro .featured-icons i {
+  font-size: 2rem;
+  color: var(--accent);
+}
+
+/* --- HERO SECTION --- */
+.hero {
+  background: url("../images/banner/hero-bg.jpg") no-repeat center center/cover;
+  height: 90vh;
+  display: flex;
   align-items: center;
+  justify-content: center;
   text-align: center;
   color: var(--white);
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 1.5s ease-out;
 }
 
 .hero-content h1 {
   font-family: var(--font-heading);
-  font-size: 5rem;
-  letter-spacing: 5px;
+  font-size: 8rem;
+  font-weight: 400;
   margin-bottom: 10px;
+  color: var(--white);
 }
 
 .hero-content p {
@@ -194,22 +238,44 @@ body.dark {
   font-weight: 300;
 }
 
+.hero-btns {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
 /* --- INTRO SECTION --- */
 .intro {
-  padding: 100px 10%;
+  padding: 80px 15%;
   text-align: center;
 }
+
 .intro h2 {
   font-family: var(--font-heading);
-  font-size: 3rem;
-  color: var(--primary);
+  font-size: 2.5rem;
   margin-bottom: 20px;
+  color: var(--primary);
 }
+
 .intro p {
   max-width: 800px;
   margin: 0 auto 40px;
   font-size: 1.1rem;
-  line-height: 1.8;
+  line-height: 1.7;
+  margin-bottom: 40px;
+  color: var(--text);
+}
+
+.intro .featured-icons {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+
+.intro .featured-icons i {
+  font-size: 2rem;
+  color: var(--accent);
 }
 
 /* =================================== PHẦN NÚT GỬI ======================================== */
@@ -219,6 +285,7 @@ body.dark {
   border-radius: 5px;
   display: inline-block;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .btn-primary {
@@ -243,112 +310,48 @@ body.dark {
   transform: translateY(-3px);
 }
 
-/* ===== RESPONSIVE HOME ===== */
-@media (max-width: 992px) {
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
   .hero-content h1 {
-    font-size: 3.5rem;
+    font-size: 5rem;
   }
 
   .hero-content p {
     font-size: 1.2rem;
   }
 
-  .promo-content {
-    padding: 40px;
-  }
-
-  .promo-content h2 {
-    font-size: 2.2rem;
-  }
-
-  .promo-image {
-    height: 350px;
-  }
-
-  .intro {
-    padding: 70px 8%;
-  }
-
-  .intro h2 {
-    font-size: 2.4rem;
-  }
-}
-
-@media (max-width: 768px) {
-  /* HERO */
-  .hero {
-    height: 70vh;
-    min-height: 400px;
-  }
-
-  .hero-content h1 {
-    font-size: 2.5rem;
-    letter-spacing: 3px;
-  }
-
-  .hero-content p {
-    font-size: 1rem;
-    margin-bottom: 20px;
-  }
-
   .hero-btns {
-    display: flex;
     flex-direction: column;
-    gap: 12px;
     align-items: center;
   }
 
-  .hero-btns .btn {
-    width: 220px;
-    text-align: center;
+  .intro {
+    padding: 60px 5%;
   }
 
-  /* PROMO BANNER */
   .promo-banner {
-    margin: 30px 5%;
     flex-direction: column;
-    border-radius: 20px;
-    animation: none;
+    margin: 40px 5%;
+    text-align: center;
   }
 
   .promo-content {
-    padding: 30px 25px;
-    text-align: center;
+    padding: 40px 30px;
   }
 
   .promo-content h2 {
-    font-size: 1.8rem;
-  }
-
-  .promo-content p {
-    font-size: 1rem;
-    margin-bottom: 20px;
+    font-size: 2rem;
   }
 
   .promo-image {
-    height: 250px;
+    height: 200px;
+    width: 100%;
     clip-path: none;
-    border-radius: 0 0 20px 20px;
   }
 
   .promo-banner::after {
     font-size: 4rem;
-    top: -10px;
-  }
-
-  /* INTRO */
-  .intro {
-    padding: 50px 5%;
-  }
-
-  .intro h2 {
-    font-size: 2rem;
-    margin-bottom: 15px;
-  }
-
-  .intro p {
-    font-size: 0.95rem;
-    margin-bottom: 25px;
+    left: 10px;
   }
 }
 

@@ -14,10 +14,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Liên hệ với GIBOR COFFEE</title>
 
-    <!-- THEME CHÍNH DÙNG CHUNG-->
+    <!-- THEME CHÍNH DÙNG CHUNG -->
     <link rel="stylesheet" href="css/style.css" />
 
-    <!-- FRONT DÙNG CHUNG -->
+    <!-- FONT DÙNG CHUNG -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Mrs+Saint+Delafield&display=swap"
       rel="stylesheet"
@@ -27,11 +27,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
 
-    <!-- THEM CONTACT -->
+    <!-- THEME CONTACT -->
     <link rel="stylesheet" href="css/contact.css" />
+
     <!-- MOBILE RESPONSIVE -->
     <link rel="stylesheet" href="css/mobile.css" />
   </head>
+
   <body>
     <!-- HEADER DÙNG CHUNG -->
     <div id="header-placeholder"></div>
@@ -42,17 +44,9 @@
         <div class="loader-icon">
           <img src="images/logo/logo.jpg" alt="GIBOR Coffee" />
         </div>
-        <p
-          style="
-            color: white;
-            margin-top: 20px;
-            letter-spacing: 5px;
-            font-weight: 600;
-          "
-        >
-          GIBOR COFFEE
-        </p>
+        <p class="preloader-text">GIBOR COFFEE</p>
       </div>
+
       <section class="contact-page">
         <div class="contact-container">
           <div class="contact-info">
@@ -69,6 +63,7 @@
                   <p>140 Lê Trọng Tấn, Tây Thạnh, Tân Phú, TP.HCM</p>
                 </div>
               </div>
+
               <div class="info-item">
                 <span class="icon"><i class="fas fa-phone-alt"></i></span>
                 <div class="text">
@@ -76,6 +71,7 @@
                   <p>0909 999 999</p>
                 </div>
               </div>
+
               <div class="info-item">
                 <span class="icon"><i class="fas fa-envelope"></i></span>
                 <div class="text">
@@ -88,12 +84,12 @@
             <div class="social-box">
               <h4>Theo dõi GIBOR</h4>
               <div class="social-links">
-                <a href="#" class="social-btn"
-                  ><i class="fab fa-facebook-f"></i> Facebook</a
-                >
-                <a href="#" class="social-btn"
-                  ><i class="fab fa-tiktok"></i> TikTok</a
-                >
+                <a href="#" class="social-btn">
+                  <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="#" class="social-btn">
+                  <i class="fab fa-tiktok"></i> TikTok
+                </a>
               </div>
             </div>
           </div>
@@ -101,40 +97,54 @@
           <div class="contact-form-box">
             <form id="contactForm">
               <div class="input-group">
-                <label>Họ và tên</label>
-                <input type="text" placeholder="Nhập tên của bạn..." required />
+                <label for="fullname">Họ và tên</label>
+                <input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  placeholder="Nhập tên của bạn..."
+                  required
+                />
               </div>
+
               <div class="input-group">
-                <label>Số điện thoại</label>
+                <label for="phone">Số điện thoại</label>
                 <input
                   type="tel"
+                  id="phone"
+                  name="phone"
                   placeholder="Số điện thoại của bạn..."
                   required
                 />
               </div>
+
               <div class="input-group">
-                <label>Lời nhắn</label>
+                <label for="message">Lời nhắn</label>
                 <textarea
+                  id="message"
+                  name="message"
                   rows="5"
                   placeholder="Bạn muốn nhắn gì cho GIBOR?"
+                  required
                 ></textarea>
               </div>
 
               <button type="submit" id="btn-gui" class="btn-send">
                 Gửi Lời Nhắn
               </button>
+            </form>
 
-              <div id="myModal" class="modal">
-                <div class="modal-content">
-                  <h2>Thành công!</h2>
-                  <p>Cảm ơn bạn! GIBOR đã nhận được lời nhắn từ bạn.</p>
+            <!-- MODAL THÀNH CÔNG -->
+            <div id="myModal" class="modal">
+              <div class="modal-content">
+                <h2>Thành công!</h2>
+                <p>Cảm ơn bạn! GIBOR đã nhận được lời nhắn từ bạn.</p>
 
-                  <div class="modal-footer">
-                    <button type="button" class="closeBtn">X Đóng</button>
-                  </div>
+                <div class="modal-footer">
+                  <button type="button" class="closeBtn">X Đóng</button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </section>
@@ -158,12 +168,13 @@
         appId: "1:37237991343:web:035a77871af9b41476315a",
         measurementId: "G-YSS8HXMN6R",
       };
+
       if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
       }
     </script>
 
-    <!-- Phần JS CHUNG -->
+    <!-- PHẦN JS CHUNG -->
     <script src="js/components.js"></script>
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
@@ -173,6 +184,7 @@
     <script src="js/mobile.js"></script>
   </body>
 </html>
+
 <!-- 
 
 ========================================================================================

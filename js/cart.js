@@ -68,15 +68,14 @@ function renderCart() {
   if (!cartEmpty || !cartContent || !cartBody) return;
 
   // Kiểm tra giỏ hàng có trống không
-  if (cart.length === 0) {
-    cartEmpty.style.display = "block";
-    cartContent.style.display = "none";
+  const isCartEmpty = cart.length === 0;
+  cartEmpty.classList.toggle("hidden", !isCartEmpty);
+  cartContent.classList.toggle("hidden", isCartEmpty);
+
+  if (isCartEmpty) {
     updateCartCount();
     return;
   }
-
-  cartEmpty.style.display = "none";
-  cartContent.style.display = "block";
 
   // Tính tổng
   let totalItems = 0;
@@ -127,16 +126,16 @@ function renderCart() {
         </td>
         <td data-label="Số lượng">
           <div class="cart-quantity">
-            <button onclick="changeQuantity(${index}, -1)">−</button>
+            <button class="btn-quantity" data-index="${index}" data-delta="-1">−</button>
             <span>${item.quantity}</span>
-            <button onclick="changeQuantity(${index}, 1)">+</button>
+            <button class="btn-quantity" data-index="${index}" data-delta="1">+</button>
           </div>
         </td>
         <td data-label="Thành tiền">
           <span class="cart-subtotal">${formatPrice(subtotal)}</span>
         </td>
         <td data-label="Xóa">
-          <button class="btn-remove" onclick="removeItem(${index})" title="Xóa sản phẩm">
+          <button class="btn-remove" data-index="${index}" title="Xóa sản phẩm">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </td>
@@ -149,6 +148,27 @@ function renderCart() {
   totalPriceEl.textContent = formatPrice(totalPrice);
 
   updateCartCount();
+  addCartActionListeners();
+}
+
+// ==================== GÁN CÁC EVENT LISTENER CHO NÚT TRONG GIỎ HÀNG ====================
+function addCartActionListeners() {
+  // Nút thay đổi số lượng
+  document.querySelectorAll(".btn-quantity").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.dataset.index, 10);
+      const delta = parseInt(e.currentTarget.dataset.delta, 10);
+      changeQuantity(index, delta);
+    });
+  });
+
+  // Nút xóa sản phẩm
+  document.querySelectorAll(".btn-remove").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.dataset.index, 10);
+      removeItem(index);
+    });
+  });
 }
 
 // ==================== THAY ĐỔI SỐ LƯỢNG ====================

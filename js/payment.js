@@ -327,7 +327,7 @@ function selectPayment(method) {
   const btnPlace = document.getElementById("btnPlaceOrder");
 
   if (bankInfo) {
-    bankInfo.classList.toggle("hidden", method !== "banking");
+    bankInfo.style.display = method === "banking" ? "block" : "none";
   }
 
   if (method === "banking") {
@@ -649,6 +649,11 @@ function showConfirmPayment() {
 
     const handleCancel = () => {
       overlay.classList.remove("show");
+      // Bấm hủy thì cập nhật lại số tiền hiện tại và tạo lại QR mới
+      const cart = getCart();
+      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      updateTotals(subtotal);
+      updateQRCode();
       btnOk.removeEventListener("click", handleOk);
       btnCancel.removeEventListener("click", handleCancel);
       resolve(false);
@@ -672,6 +677,11 @@ async function placeOrder() {
 
   // Nếu cần xác nhận thanh toán (chọn Banking)
   if (validationResult === "NEED_CONFIRM") {
+    // Mỗi lần bấm đặt hàng với banking: cập nhật lại tổng và tạo QR mới
+    const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    updateTotals(subtotal);
+    updateQRCode();
+
     const confirmed = await showConfirmPayment();
     if (!confirmed) {
       showToast("Vui lòng hoàn tất thanh toán trước khi đặt hàng!");
@@ -1448,39 +1458,100 @@ const CONFIG = {
 function updateQRCode() {
   const loader = document.getElementById("qrLoader");
   const qrImg = document.getElementById("qrImage");
+  const amountEl = document.getElementById("displayAmount");
+  const descEl = document.getElementById("displayDesc");
+  const totalEl = document.getElementById("grandTotal");
+
+  if (!loader || !qrImg || !amountEl || !descEl || !totalEl) return;
 
   // 1. Lấy số tiền từ giao diện
-  let totalStr = document.getElementById("grandTotal").innerText;
+  let totalStr = totalEl.innerText;
   let amount = totalStr.replace(/[^0-9]/g, ""); // Chỉ lấy số
+  const amountNum = parseInt(amount || "0", 10);
 
   // 2. Tạo nội dung chuyển khoản
   let orderId = "GB" + Math.floor(1000 + Math.random() * 9000);
   let desc = `GIBOR ${orderId}`;
 
   // Cập nhật text hiển thị
-  document.getElementById("displayAmount").innerText =
-    parseInt(amount).toLocaleString() + "đ";
-  document.getElementById("displayDesc").innerText = desc;
+  amountEl.innerText = amountNum.toLocaleString("vi-VN") + "đ";
+  descEl.innerText = desc;
+
+  if (amountNum <= 0) {
+    loader.style.display = "none";
+    showToast("Không thể tạo QR: tổng tiền không hợp lệ.");
+    return;
+  }
 
   // 3. Gọi API VietQR
   // Cấu trúc: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<NAME>
-  const qrUrl = `https://img.vietqr.io/image/${CONFIG.BANK_ID}-${CONFIG.ACC_NO}-${CONFIG.TEMPLATE}.png?amount=${amount}&addInfo=${encodeURIComponent(desc)}&accountName=${encodeURIComponent(CONFIG.ACC_NAME)}`;
+  const amountParam = String(amountNum);
+  const base = "https://img.vietqr.io/image";
+  const bankIds = [CONFIG.BANK_ID, "MBBANK"];
+  const templates = [CONFIG.TEMPLATE, "compact2", "compact"];
+  const builtUrls = [];
+
+  bankIds.forEach((bankId) => {
+    templates.forEach((template) => {
+      builtUrls.push(
+        `${base}/${bankId}-${CONFIG.ACC_NO}-${template}.png?amount=${amountParam}&addInfo=${encodeURIComponent(desc)}&accountName=${encodeURIComponent(CONFIG.ACC_NAME)}&t=${Date.now()}`,
+      );
+    });
+  });
+
+  const qrUrls = Array.from(new Set(builtUrls));
 
   // Hiển thị loader trong khi tải ảnh
   qrImg.style.display = "none";
   loader.style.display = "block";
 
-  qrImg.src = qrUrl;
+  let handled = false;
+  let timeoutId = null;
+
+  const cleanup = () => {
+    qrImg.onload = null;
+    qrImg.onerror = null;
+    if (timeoutId) clearTimeout(timeoutId);
+  };
+
+  const showLoadFailed = () => {
+    showToast("Không tải được mã QR. Vui lòng thử lại sau.");
+  };
 
   qrImg.onload = function () {
+    if (handled) return;
+    handled = true;
+    cleanup();
     loader.style.display = "none";
     qrImg.style.display = "block";
   };
 
+  let currentIndex = 0;
   qrImg.onerror = function () {
+    if (handled) return;
+
+    currentIndex += 1;
+    if (currentIndex < qrUrls.length) {
+      qrImg.src = qrUrls[currentIndex];
+      return;
+    }
+
+    handled = true;
+    cleanup();
     loader.style.display = "none";
-    alert("Không thể tải mã QR. Vui lòng kiểm tra kết nối mạng.");
+    showLoadFailed();
   };
+
+  timeoutId = setTimeout(() => {
+    if (handled) return;
+    handled = true;
+    cleanup();
+    loader.style.display = "none";
+    showLoadFailed();
+  }, 10000);
+
+  // Gắn sự kiện trước rồi mới set src để tránh mất onload khi ảnh cache tải quá nhanh
+  qrImg.src = qrUrls[0];
 }
 
 /* 

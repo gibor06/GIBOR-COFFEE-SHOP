@@ -1596,7 +1596,7 @@
     min-height: 100px;
     resize: vertical;
   }
-  .btn-send {
+  .contact-page .btn-send {
     width: 100%;
     padding: 14px;
     border-radius: var(--m-radius);
@@ -1608,22 +1608,22 @@
     min-height: 50px;
     cursor: pointer;
   }
-  .btn-send:active {
+  .contact-page .btn-send:active {
     opacity: 0.9;
   }
 
   /* Contact modal */
-  .modal-content {
+  .contact-page .modal-content {
     border-radius: var(--m-radius);
     padding: 24px 16px;
     text-align: center;
     max-width: 90vw;
     margin: auto;
   }
-  .modal-content h2 {
+  .contact-page .modal-content h2 {
     font-size: 1.2rem;
   }
-  .closeBtn {
+  .contact-page .closeBtn {
     padding: 10px 24px;
     border-radius: var(--m-radius);
     min-height: 44px;

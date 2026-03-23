@@ -574,6 +574,31 @@ a {
   padding: 0 20px;
 }
 
+body.dark .menu-container {
+  background: var(--dark-page-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px 20px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+body.dark .menu-title,
+body.dark .section-title,
+body.dark .menu-card h4,
+body.dark .price {
+  color: #f0d7bd;
+}
+
+body.dark .menu-card {
+  background: linear-gradient(165deg, #1f1f25 0%, #18181d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+body.dark .menu-card p {
+  color: rgba(255, 255, 255, 0.76);
+}
+
 /* =========================================
    TIÊU ĐỀ MENU (MENU GIBOR COFFEE)
 ========================================= */

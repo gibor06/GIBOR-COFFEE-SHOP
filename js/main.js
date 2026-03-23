@@ -190,8 +190,7 @@ const initApp = () => {
           btnOrderHistory.addEventListener("click", (e) => {
             e.preventDefault();
             dropdownOverlay.classList.remove("show");
-            if (typeof showOrderHistoryPopup === "function")
-              showOrderHistoryPopup();
+            window.location.href = "account.html?tab=orders";
           });
         }
 
@@ -201,7 +200,7 @@ const initApp = () => {
           btnMyAccount.addEventListener("click", (e) => {
             e.preventDefault();
             dropdownOverlay.classList.remove("show");
-            if (typeof showProfilePopup === "function") showProfilePopup();
+            window.location.href = "account.html?tab=profile";
           });
         }
       }

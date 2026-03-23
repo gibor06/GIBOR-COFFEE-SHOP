@@ -16,7 +16,7 @@
       district: "Tân Phú",
       name: "GIBOR Lê Trọng Tấn",
       address: "140 Lê Trọng Tấn, Tây Thạnh, Tân Phú, TP. Hồ Chí Minh",
-      image: "images/Branch/TPHCM1.JPG",
+      image: "images/Branch/TPHCM2.jpg",
     },
     {
       id: "hcm2",
@@ -25,7 +25,7 @@
       district: "Quận 1",
       name: "GIBOR Nguyễn Huệ",
       address: "263 Nguyễn Huệ, Bến Nghé, Quận 1, TP. Hồ Chí Minh",
-      image: "images/Branch/TPHCM2.jpg",
+      image: "images/Branch/TPHCM1.jpg",
     },
     {
       id: "hcm3",
@@ -33,7 +33,7 @@
       cityName: "TP. Hồ Chí Minh",
       district: "Quận 3",
       name: "GIBOR Võ Văn Tần",
-      address: "108 Võ Văn Tần, Phường 6, Quận 3, TP. Hồ Chí Minh",
+      address: "123 Võ Văn Tần, Phường 6, Quận 3, TP. Hồ Chí Minh",
       image: "images/Branch/TPHCM3.jpg",
     },
     {
@@ -106,7 +106,7 @@
       district: "Ngũ Hành Sơn",
       name: "GIBOR Võ Nguyên Giáp",
       address: "567 Võ Nguyên Giáp, Mỹ An, Ngũ Hành Sơn, Đà Nẵng",
-      image: "images/Branch/DANANG1.jpg",
+      image: "images/Branch/DANANG2.jpg",
     },
     {
       id: "dn2",
@@ -115,7 +115,7 @@
       district: "Hải Châu",
       name: "GIBOR Bạch Đằng",
       address: "453 Bạch Đằng, Thạch Thang, Hải Châu, Đà Nẵng",
-      image: "images/Branch/DANANG2.jpg",
+      image: "images/Branch/DANANG1.jpg",
     },
     {
       id: "dn3",

@@ -7,20 +7,8 @@
 */
 
 /* CODE BỞI TRẦN GIA BẢO */
-body.dark {
-  .checkout-title {
-    color: var(--accent);
-  }
-
-  input,
-  select,
-  textarea {
-    background-color: #ffffff; /* Màu nền trắng */
-    color: #000000; /* Màu chữ đen để dễ đọc */
-    border: 1px solid #ccc; /* Thêm viền để dễ phân biệt trên nền trắng */
-  }
-
-  --text: var(--text);
+body.dark .checkout-title {
+  color: var(--accent);
 }
 /* KẾT THÚC CODE BỞI TRẦN GIA BẢO */
 
@@ -30,6 +18,15 @@ body.dark {
   margin: 30px auto;
   padding: 0 20px;
   min-height: 60vh;
+}
+
+body.dark .checkout-container {
+  background: var(--dark-page-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+  padding-top: 22px;
+  padding-bottom: 22px;
 }
 
 .checkout-title {
@@ -82,7 +79,6 @@ body.dark {
 
 .checkout-section h3 {
   font-family: var(--font-heading);
-  color: var(--primary);
   font-size: 1.15rem;
   margin-bottom: 18px;
   padding-bottom: 10px;
@@ -1315,6 +1311,103 @@ body.dark {
   color: #999;
   font-size: 0.85rem;
   font-style: italic;
+}
+
+/* ===== DARK MODE NORMALIZE SURFACES ===== */
+body.dark .checkout-section,
+body.dark .order-section,
+body.dark .payment-option,
+body.dark .shipping-option,
+body.dark .banking-info,
+body.dark .qr-details,
+body.dark .points-section,
+body.dark .ss-display,
+body.dark .ss-dropdown,
+body.dark .ss-search,
+body.dark .ss-option,
+body.dark .success-box {
+  background: #1a1a20;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f3ede5;
+}
+
+body.dark .confirm-popup,
+body.dark .success-box {
+  background: var(--dark-popup-bg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+body.dark .form-group input,
+body.dark .form-group select,
+body.dark .form-group textarea,
+body.dark .points-input-row input {
+  background: #111218;
+  color: #f3ede5;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark .phone-prefix {
+  background: #23232b;
+  color: #f0d7bd;
+  border-right-color: rgba(255, 255, 255, 0.14);
+}
+
+body.dark .ss-search,
+body.dark .ss-option,
+body.dark .ss-display.selected,
+body.dark .qr-details p,
+body.dark .points-header span:first-of-type,
+body.dark .points-info-row,
+body.dark .points-info-row-1 {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+body.dark .payment-option:hover,
+body.dark .shipping-option:hover,
+body.dark .ss-option:hover,
+body.dark .payment-option.active,
+body.dark .shipping-option.active,
+body.dark .ss-option.active {
+  background: rgba(212, 163, 115, 0.16);
+}
+
+body.dark .branch-section {
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+
+body.dark .branch-section h4 {
+  color: #f0d7bd;
+}
+
+body.dark .branch-card {
+  background: #1a1a20;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.dark .branch-card:hover,
+body.dark .branch-card.active {
+  background: rgba(212, 163, 115, 0.16);
+  border-color: rgba(212, 163, 115, 0.8);
+}
+
+body.dark .branch-name {
+  color: #f3ede5;
+}
+
+body.dark .branch-address {
+  color: rgba(255, 255, 255, 0.82);
+  opacity: 1;
+}
+
+body.dark .copy-btn {
+  background: #2a2a31;
+  color: #f0d7bd;
+}
+
+body.dark .points-current {
+  background: rgba(212, 163, 115, 0.16);
+  color: #f0d7bd;
+  border-color: rgba(212, 163, 115, 0.45);
 }
 
 /* 

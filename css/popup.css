@@ -379,7 +379,7 @@ body.dark .option-label {
 
 /* ===== DARK THEME POPUP ===== */
 body.dark .popup-box {
-  background: #1f1f1f;
+  background: var(--dark-popup-bg, #1f1f1f);
   color: #f4e9de;
 }
 

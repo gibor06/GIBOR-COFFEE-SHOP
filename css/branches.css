@@ -8,6 +8,61 @@
   padding-bottom: 60px;
 }
 
+body.dark .branches-page {
+  background: var(--dark-page-bg);
+}
+
+body.dark .branches-container {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding-top: 18px;
+  padding-bottom: 20px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+body.dark .branch-filter-card,
+body.dark .branch-card,
+body.dark .branch-detail-card,
+body.dark .branch-empty {
+  background: linear-gradient(165deg, #1f1f25 0%, #18181d 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
+}
+
+body.dark .branch-filter-card h2,
+body.dark .branch-card__name,
+body.dark .branch-detail-heading h3,
+body.dark .branch-meta li,
+body.dark .branch-meta a,
+body.dark .branch-result {
+  color: #f0d7bd;
+}
+
+body.dark .branch-filter-card p,
+body.dark .branch-card__address,
+body.dark .branch-card__desc,
+body.dark .branch-short,
+body.dark .branch-full,
+body.dark .branch-empty {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+body.dark .branch-filter-item label {
+  color: #f0d7bd;
+}
+
+body.dark .branch-filter-item select,
+body.dark .branch-filter-item input {
+  background: #111218;
+  color: #f3ede5;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark .branch-map-frame {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
 .branches-hero {
   min-height: 340px;
   background:

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tai Khoan - GIBOR COFFEE SHOP</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/account.css" />
+    <link rel="stylesheet" href="css/mobile.css" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div id="header-placeholder"></div>
+
+    <main class="account-page" id="accountPageRoot" hidden>
+      <section class="account-shell">
+        <aside class="account-sidebar">
+          <div class="account-user-head">
+            <div class="account-avatar" id="accountAvatar">G</div>
+            <div>
+              <h1 id="accountDisplayName">Tai khoan</h1>
+              <p id="accountEmail">-</p>
+            </div>
+          </div>
+
+          <nav class="account-menu" aria-label="Dieu huong tai khoan">
+            <button class="account-menu-btn active" data-tab="profile">
+              <i class="fas fa-user"></i> Tai khoan cua toi
+            </button>
+            <button class="account-menu-btn" data-tab="orders">
+              <i class="fas fa-bag-shopping"></i> Don hang
+            </button>
+            <button class="account-menu-btn logout" id="accountLogoutBtn">
+              <i class="fas fa-sign-out-alt"></i> Dang xuat
+            </button>
+          </nav>
+        </aside>
+
+        <section class="account-content">
+          <div class="account-panel active" data-panel="profile">
+            <header class="panel-header">
+              <h2>Tai khoan cua toi</h2>
+              <p>Cap nhat thong tin va bao mat tai khoan.</p>
+            </header>
+
+            <div class="subtabs">
+              <button class="subtab-btn active" data-subtab="info">Thong tin</button>
+              <button class="subtab-btn" data-subtab="security">Bao mat</button>
+            </div>
+
+            <div class="subtab-panel active" data-subpanel="info">
+              <form id="profileInfoForm" class="account-form" novalidate>
+                <div class="form-grid">
+                  <label>
+                    Ho
+                    <input type="text" id="profileLastName" required />
+                  </label>
+                  <label>
+                    Ten
+                    <input type="text" id="profileFirstName" required />
+                  </label>
+                  <label>
+                    So dien thoai
+                    <input type="tel" id="profilePhone" />
+                  </label>
+                  <label>
+                    Email
+                    <input type="email" id="profileEmail" required />
+                  </label>
+                </div>
+                <button type="submit" class="account-btn primary">
+                  <i class="fas fa-save"></i> Luu thay doi
+                </button>
+              </form>
+            </div>
+
+            <div class="subtab-panel" data-subpanel="security">
+              <form id="profileSecurityForm" class="account-form" novalidate>
+                <label>
+                  Mat khau hien tai
+                  <input type="password" id="oldPassword" required />
+                </label>
+                <label>
+                  Mat khau moi
+                  <input type="password" id="newPassword" minlength="6" required />
+                </label>
+                <label>
+                  Xac nhan mat khau moi
+                  <input type="password" id="confirmPassword" minlength="6" required />
+                </label>
+                <button type="submit" class="account-btn primary">
+                  <i class="fas fa-lock"></i> Doi mat khau
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="account-panel" data-panel="orders">
+            <header class="panel-header">
+              <h2>Don hang cua ban</h2>
+              <p>Theo doi lich su dat hang tai GIBOR Coffee.</p>
+            </header>
+
+            <div class="order-list" id="orderList"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCnHG40t4WN230Alu4ia0cvzKhfndeBfpE",
+        authDomain: "coffee-a718c.firebaseapp.com",
+        projectId: "coffee-a718c",
+        storageBucket: "coffee-a718c.firebasestorage.app",
+        messagingSenderId: "37237991343",
+        appId: "1:37237991343:web:035a77871af9b41476315a",
+        measurementId: "G-YSS8HXMN6R",
+      };
+      if (typeof firebase !== "undefined" && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+    </script>
+
+    <script src="js/components.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/mobile.js"></script>
+  </body>
+</html>

@@ -1872,6 +1872,27 @@ a {
   letter-spacing: 3px;
 }
 
+/* Firebase hint - Email đã được gửi qua Firebase */
+.otp-firebase-hint {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  color: #1565c0;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.otp-firebase-hint i {
+  font-size: 1.1rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
 /* OTP Input Fields */
 .otp-inputs {
   display: flex;
@@ -2008,7 +2029,9 @@ a {
 
 /* 
 ========================================================================================
+
               DARK THEME - POPUP OVERRIDES - CODE BỞI TRẦN DƯƠNG GIA BẢO
+              
 ========================================================================================
 */
 
@@ -2235,6 +2258,12 @@ body.dark .otp-demo-hint {
   background: #1e3325;
   border-color: #2a5a38;
   color: #7cd497;
+}
+
+body.dark .otp-firebase-hint {
+  background: #1a2332;
+  border-color: #2d4a6e;
+  color: #64b5f6;
 }
 
 body.dark .otp-digit {

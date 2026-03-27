@@ -1,4 +1,10 @@
-/* Account page logic */
+/* 
+========================================================================================
+
+                                    CODE BỞI NGUYỄN THẾ ANH
+
+========================================================================================
+*/
 (function () {
   "use strict";
 
@@ -237,22 +243,43 @@
         return;
       }
 
-      const doChange = () => {
+      // Kiểm tra mật khẩu cũ trước khi gửi email
+      const users = UserManager.getUsers();
+      const user = users.find((u) => u.id === currentUser.id);
+      
+      if (!user || user.password !== oldPassword) {
+        notifyError("Sai mật khẩu", "Mật khẩu hiện tại không đúng. Vui lòng thử lại.");
+        return;
+      }
+
+      // Lưu thông tin đổi mật khẩu tạm thời vào sessionStorage
+      const changePasswordRequest = {
+        userId: currentUser.id,
+        email: currentUser.email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        timestamp: Date.now(),
+        token: generateVerificationToken()
+      };
+      
+      sessionStorage.setItem('gibor_password_change_request', JSON.stringify(changePasswordRequest));
+
+      // Gửi email xác thực qua Firebase
+      if (typeof sendPasswordChangeVerificationEmail === "function") {
+        sendPasswordChangeVerificationEmail(currentUser.email, changePasswordRequest.token);
+      } else {
+        // Fallback: Thực hiện đổi mật khẩu trực tiếp
         const result = UserManager.updatePassword(oldPassword, newPassword);
         if (!result.success) {
           notifyError("Đổi mật khẩu thất bại", result.message || "Không thể đổi mật khẩu.");
           return;
         }
 
-        notifySuccess("Thành công", "Bạn đã đổi mật khẩu thành công.", () => {
+        notifySuccess("Thành công", "Bạn đã đổi mật khẩu thành công. Vui lòng đăng nhập lại.", () => {
           form.reset();
+          UserManager.logout();
+          window.location.href = "login.html";
         });
-      };
-
-      if (typeof showEmailOTPPopup === "function") {
-        showEmailOTPPopup(currentUser.email, doChange);
-      } else {
-        doChange();
       }
     });
   }
@@ -293,6 +320,18 @@
       return;
     }
 
+    // Kiểm tra xem có query param verify_password_change không
+    const urlParams = new URLSearchParams(window.location.search);
+    const verifyToken = urlParams.get('verify_password_change');
+    
+    if (verifyToken && typeof verifyAndChangePassword === "function") {
+      // Xóa query param khỏi URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Thực hiện xác thực và đổi mật khẩu
+      verifyAndChangePassword(verifyToken);
+      return;
+    }
+
     renderUserHeader(currentUser);
     fillProfileForm(currentUser);
     renderOrders();
@@ -310,3 +349,10 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
+/* 
+========================================================================================
+
+                                    KẾT THÚC CODE BỞI NGUYỄN THẾ ANH
+
+========================================================================================
+*/

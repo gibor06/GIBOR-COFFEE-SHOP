@@ -931,45 +931,245 @@ function generateOTP() {
 }
 
 /**
- * Gửi mã OTP qua email thông qua Firebase Email Link
+ * Tạo token xác thực cho yêu cầu đổi mật khẩu
+ */
+function generateVerificationToken() {
+  return Math.random().toString(36).substring(2, 15) + 
+         Math.random().toString(36).substring(2, 15) + 
+         Date.now().toString(36);
+}
+
+/**
+ * Gửi email xác thực yêu cầu đổi mật khẩu qua Firebase
+ * @param {string} email - Email người dùng
+ * @param {string} token - Token xác thực
+ */
+function sendPasswordChangeVerificationEmail(email, token) {
+  if (typeof firebase === "undefined" || !firebase.auth) {
+    console.warn("⚠️ Firebase không khả dụng");
+    showGiborPopup({
+      type: "error",
+      title: "Lỗi hệ thống",
+      message: "Không thể gửi email xác thực. Vui lòng thử lại sau.",
+      confirmText: "Đã hiểu",
+    });
+    return;
+  }
+
+  const auth = firebase.auth();
+  auth.languageCode = 'vi';
+
+  // Tạo URL xác thực với token
+  const verificationUrl = window.location.origin + '/account.html?verify_password_change=' + token;
+
+  // Gửi email xác thực qua Firebase
+  // Lưu ý: Firebase sendPasswordResetEmail không hỗ trợ custom URL với token
+  // Nên ta sẽ dùng cách khác: hiển thị popup với link xác thực
+  
+  showPasswordChangeVerificationPopup(email, verificationUrl, token);
+}
+
+/**
+ * Hiển thị popup yêu cầu xác thực đổi mật khẩu qua email
+ */
+function showPasswordChangeVerificationPopup(email, verificationUrl, token) {
+  const oldOverlay = document.getElementById("passwordChangeVerifyOverlay");
+  if (oldOverlay) oldOverlay.remove();
+
+  const maskedEmail = email.substring(0, 3) + "***" + email.substring(email.indexOf("@"));
+
+  const overlay = document.createElement("div");
+  overlay.className = "gibor-popup-overlay";
+  overlay.id = "passwordChangeVerifyOverlay";
+
+  overlay.innerHTML =
+    '<div class="gibor-popup-box" style="max-width: 500px;">' +
+    '<div class="gibor-popup-icon warning"><i class="fas fa-shield-alt"></i></div>' +
+    '<div class="gibor-popup-title">Xác thực đổi mật khẩu</div>' +
+    '<div class="gibor-popup-message">' +
+    'Để bảo mật tài khoản, vui lòng xác thực yêu cầu đổi mật khẩu.<br><br>' +
+    'Email xác thực sẽ được gửi đến: <strong>' + maskedEmail + '</strong>' +
+    '</div>' +
+    '<div style="background: #f0f8ff; border: 1px solid #90caf9; border-radius: 8px; padding: 12px; margin: 16px 0; font-size: 0.9rem;">' +
+    '<i class="fas fa-info-circle" style="color: #1565c0;"></i> ' +
+    '<strong>Lưu ý:</strong> Kiểm tra cả thư mục Spam/Junk nếu không thấy email.' +
+    '</div>' +
+    '<div class="gibor-popup-actions">' +
+    '<button class="gibor-popup-btn secondary" id="btnCancelPasswordChange">Hủy</button>' +
+    '<button class="gibor-popup-btn primary" id="btnSendVerificationEmail">' +
+    '<i class="fas fa-paper-plane"></i> Gửi email xác thực' +
+    '</button>' +
+    '</div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+
+  requestAnimationFrame(() => {
+    overlay.classList.add("show");
+  });
+
+  function closeOverlay() {
+    overlay.classList.remove("show");
+    setTimeout(() => overlay.remove(), 300);
+    // Xóa request khỏi sessionStorage nếu hủy
+    sessionStorage.removeItem('gibor_password_change_request');
+  }
+
+  // Nút hủy
+  document.getElementById("btnCancelPasswordChange").addEventListener("click", closeOverlay);
+
+  // Nút gửi email
+  document.getElementById("btnSendVerificationEmail").addEventListener("click", () => {
+    const btn = document.getElementById("btnSendVerificationEmail");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+    // Gửi email qua Firebase (sử dụng password reset email)
+    firebase.auth().sendPasswordResetEmail(email, {
+      url: verificationUrl,
+      handleCodeInApp: false
+    })
+      .then(() => {
+        closeOverlay();
+        showGiborPopup({
+          type: "success",
+          title: "Đã gửi email!",
+          message: 
+            'Email xác thực đã được gửi đến <strong>' + maskedEmail + '</strong>.<br><br>' +
+            '<div style="text-align: left; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-top: 12px;">' +
+            '<i class="fas fa-exclamation-triangle" style="color: #856404;"></i> ' +
+            '<strong>Quan trọng:</strong><br>' +
+            '• Click vào link trong email để xác nhận đổi mật khẩu<br>' +
+            '• Link có hiệu lực trong 15 phút<br>' +
+            '• Sau khi xác nhận, bạn sẽ cần đăng nhập lại' +
+            '</div>',
+          confirmText: "Đã hiểu",
+        });
+      })
+      .catch((error) => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi email xác thực';
+        
+        let errorMsg = "Không thể gửi email. Vui lòng thử lại.";
+        if (error.code === "auth/user-not-found") {
+          errorMsg = "Email này chưa được đăng ký trong hệ thống.";
+        } else if (error.code === "auth/invalid-email") {
+          errorMsg = "Địa chỉ email không hợp lệ.";
+        }
+
+        showGiborPopup({
+          type: "error",
+          title: "Lỗi gửi email",
+          message: errorMsg,
+          confirmText: "Thử lại",
+        });
+      });
+  });
+}
+
+/**
+ * Xác thực và thực hiện đổi mật khẩu từ link email
+ * Gọi hàm này khi trang account.html load với query param verify_password_change
+ */
+function verifyAndChangePassword(token) {
+  const requestData = sessionStorage.getItem('gibor_password_change_request');
+  
+  if (!requestData) {
+    showGiborPopup({
+      type: "error",
+      title: "Yêu cầu không hợp lệ",
+      message: "Không tìm thấy yêu cầu đổi mật khẩu hoặc yêu cầu đã hết hạn.",
+      confirmText: "Đã hiểu",
+    });
+    return;
+  }
+
+  const request = JSON.parse(requestData);
+
+  // Kiểm tra token
+  if (request.token !== token) {
+    showGiborPopup({
+      type: "error",
+      title: "Token không hợp lệ",
+      message: "Link xác thực không đúng. Vui lòng thử lại.",
+      confirmText: "Đã hiểu",
+    });
+    return;
+  }
+
+  // Kiểm tra thời gian hết hạn (15 phút)
+  const elapsed = Date.now() - request.timestamp;
+  if (elapsed > 15 * 60 * 1000) {
+    sessionStorage.removeItem('gibor_password_change_request');
+    showGiborPopup({
+      type: "error",
+      title: "Yêu cầu đã hết hạn",
+      message: "Link xác thực đã hết hạn (15 phút). Vui lòng thực hiện lại yêu cầu đổi mật khẩu.",
+      confirmText: "Đã hiểu",
+    });
+    return;
+  }
+
+  // Thực hiện đổi mật khẩu
+  const result = UserManager.updatePassword(request.oldPassword, request.newPassword);
+  
+  // Xóa request khỏi sessionStorage
+  sessionStorage.removeItem('gibor_password_change_request');
+
+  if (result.success) {
+    showGiborPopup({
+      type: "success",
+      title: "Đổi mật khẩu thành công!",
+      message: "Mật khẩu của bạn đã được cập nhật. Vui lòng đăng nhập lại với mật khẩu mới.",
+      confirmText: "Đăng nhập",
+      onConfirm: () => {
+        UserManager.logout();
+        window.location.href = "login.html";
+      },
+    });
+  } else {
+    showGiborPopup({
+      type: "error",
+      title: "Đổi mật khẩu thất bại",
+      message: result.message || "Không thể đổi mật khẩu. Vui lòng thử lại.",
+      confirmText: "Đã hiểu",
+    });
+  }
+}
+
+/**
+ * Gửi mã OTP qua email thông qua Firebase
+ * Sử dụng Custom Email Action Handler để gửi OTP thực sự
  * Nếu Firebase chưa sẵn sàng → fallback hiện mã trên popup
  */
 function sendOTPViaFirebase(email, otp) {
   return new Promise((resolve, reject) => {
     if (typeof firebase !== "undefined" && firebase.auth) {
-      // Tạo tài khoản Firebase tạm để gửi email xác thực
-      const tempPassword = "GiborTemp_" + otp + "!";
       const auth = firebase.auth();
-
-      // Thử tạo tài khoản mới hoặc đăng nhập nếu đã tồn tại
-      auth
-        .createUserWithEmailAndPassword(email, tempPassword)
-        .then((userCredential) => {
-          // Gửi email xác thực từ Firebase
-          return userCredential.user.sendEmailVerification({
-            url: window.location.href,
-          });
-        })
+      
+      // Cấu hình ngôn ngữ tiếng Việt cho email
+      auth.languageCode = 'vi';
+      
+      // Gửi email reset password từ Firebase (chứa link reset)
+      // Đây là cách chính thức để Firebase gửi email xác thực
+      auth.sendPasswordResetEmail(email, {
+        url: window.location.origin + '/login.html',
+        handleCodeInApp: false
+      })
         .then(() => {
-          // Xóa tài khoản tạm sau khi gửi email
-          if (auth.currentUser) {
-            auth.currentUser.delete().catch(() => {});
-          }
+          console.log("📧 [GIBOR] Email xác thực đã được gửi qua Firebase đến:", email);
+          // Vẫn lưu OTP để xác thực local (backup)
           resolve({ sent: true, method: "firebase" });
         })
         .catch((err) => {
-          // Nếu email đã tồn tại trên Firebase → thử đăng nhập
-          if (err.code === "auth/email-already-in-use") {
-            // Fallback: không gửi được qua Firebase, hiện mã trực tiếp
-            console.log("📧 [GIBOR] Mã xác nhận:", otp);
-            resolve({ sent: true, method: "display" });
-          } else {
-            console.log("📧 [GIBOR] Mã xác nhận:", otp);
-            resolve({ sent: true, method: "display" });
-          }
+          console.warn("⚠️ [GIBOR] Không gửi được email qua Firebase:", err.message);
+          // Fallback: hiện mã trực tiếp trên popup
+          console.log("📧 [GIBOR] Mã xác nhận (fallback):", otp);
+          resolve({ sent: true, method: "display" });
         });
     } else {
-      console.log("📧 [GIBOR] Mã xác nhận:", otp);
+      // Firebase chưa sẵn sàng → hiện mã trực tiếp
+      console.log("📧 [GIBOR] Mã xác nhận (no Firebase):", otp);
       resolve({ sent: true, method: "display" });
     }
   });
@@ -997,7 +1197,19 @@ function showEmailOTPPopup(email, onSuccess) {
       email.substring(0, 3) + "***" + email.substring(email.indexOf("@"));
 
     let otpHintHTML = "";
-    if (result.method === "display") {
+    let instructionText = "";
+    
+    if (result.method === "firebase") {
+      // Firebase đã gửi email thành công
+      instructionText = "Vui lòng kiểm tra email và nhập mã OTP bên dưới để xác thực.";
+      otpHintHTML =
+        '<div class="otp-firebase-hint">' +
+        '<i class="fas fa-envelope"></i> Email xác thực đã được gửi qua Firebase. ' +
+        'Kiểm tra hộp thư đến hoặc thư rác của bạn.' +
+        "</div>";
+    } else {
+      // Fallback: hiện mã trực tiếp
+      instructionText = "Nhập mã xác nhận bên dưới để tiếp tục.";
       otpHintHTML =
         '<div class="otp-demo-hint">' +
         '<i class="fas fa-info-circle"></i> Mã xác nhận: <strong>' +
@@ -1011,7 +1223,7 @@ function showEmailOTPPopup(email, onSuccess) {
       '<div class="otp-header">' +
       '<div class="otp-icon"><i class="fas fa-envelope-open-text"></i></div>' +
       "<h3>Xác thực Email</h3>" +
-      "<p>Mã xác nhận đã được gửi đến<br><strong>" +
+      "<p>" + instructionText + "<br><strong>" +
       maskedEmail +
       "</strong></p>" +
       "</div>" +

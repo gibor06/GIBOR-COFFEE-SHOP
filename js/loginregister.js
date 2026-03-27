@@ -1,7 +1,9 @@
 /* 
-  ========================================================================================
-                              CODE BỞI NGUYỄN THẾ ANH
-  ========================================================================================
+========================================================================================
+
+                                     CODE BỞI NGUYỄN THẾ ANH
+
+========================================================================================
 */
 
 /**
@@ -149,6 +151,32 @@ if (registerForm) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo tài khoản...';
 
+    // BƯỚC 0: Kiểm tra email đã tồn tại trong localStorage chưa (kiểm tra trước cả Firebase)
+    const users = UserManager.getUsers();
+    const existingUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    
+    if (existingUser) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+      
+      let errorMsg = "Email đã được dùng để đăng ký.";
+      if (existingUser.provider === "google") {
+        errorMsg = "Email này đã được đăng ký bằng tài khoản Google. Vui lòng đăng nhập bằng Google.";
+      } else if (existingUser.provider === "github") {
+        errorMsg = "Email này đã được đăng ký bằng tài khoản GitHub. Vui lòng đăng nhập bằng GitHub.";
+      } else {
+        errorMsg = "Email đã được dùng để đăng ký. Vui lòng đăng nhập hoặc sử dụng email khác.";
+      }
+      
+      showGiborPopup({
+        type: "error",
+        title: "Email đã tồn tại",
+        message: errorMsg,
+        confirmText: "Đã hiểu",
+      });
+      return;
+    }
+
     // BƯỚC 1: Đăng ký trên Firebase (để dùng tính năng Quên Mật Khẩu qua email)
     if (typeof firebase !== "undefined" && firebase.auth) {
       try {
@@ -159,9 +187,11 @@ if (registerForm) {
         
         let msg = "Không thể tạo tài khoản.";
         if (error.code === "auth/email-already-in-use") {
-          msg = "Email này đã được đăng ký trước đó!";
+          msg = "Email này đã được đăng ký trên Firebase. Nếu bạn đã đăng ký bằng Google/GitHub, vui lòng đăng nhập bằng phương thức đó.";
         } else if (error.code === "auth/weak-password") {
           msg = "Mật khẩu quá yếu. Tối thiểu 6 ký tự.";
+        } else if (error.code === "auth/invalid-email") {
+          msg = "Địa chỉ email không hợp lệ.";
         }
         showGiborPopup({
           type: "error",
@@ -279,6 +309,14 @@ function handleGoogleSignIn() {
             redirectAfterLogin();
           },
         });
+      } else {
+        // Trường hợp email đã được đăng ký bằng phương thức khác
+        showGiborPopup({
+          type: "error",
+          title: "Không thể đăng nhập",
+          message: loginResult.message,
+          confirmText: "Đã hiểu",
+        });
       }
     })
     .catch((error) => {
@@ -368,6 +406,14 @@ function handleGithubSignIn() {
           onConfirm: () => {
             redirectAfterLogin();
           },
+        });
+      } else {
+        // Trường hợp email đã được đăng ký bằng phương thức khác
+        showGiborPopup({
+          type: "error",
+          title: "Không thể đăng nhập",
+          message: loginResult.message,
+          confirmText: "Đã hiểu",
         });
       }
     })
@@ -541,7 +587,10 @@ if (btnForgotPassword) {
   });
 }
 
-/* ======================================================================================
-   KẾT THÚC CODE BỞI NGUYỄN THẾ ANH
-   ======================================================================================
+/* 
+========================================================================================
+
+                                    KẾT THÚC CODE BỞI NGUYỄN THẾ ANH
+
+========================================================================================
 */

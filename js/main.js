@@ -22,6 +22,73 @@ const updateHeaderScrollState = () => {
 window.addEventListener("scroll", updateHeaderScrollState);
 window.addEventListener("resize", updateHeaderScrollState);
 
+const syncBootstrapTheme = (isDark) => {
+  document.documentElement.setAttribute("data-bs-theme", isDark ? "dark" : "light");
+};
+
+const initSmoothReveal = () => {
+  const revealSelectors = [
+    "main > section",
+    ".menu-section",
+    ".menu-card",
+    ".trust-item",
+    ".contact-card",
+    ".about-timeline-item",
+    ".branch-card",
+    ".cart-item",
+    ".summary-card",
+  ];
+
+  const targets = [
+    ...new Set(document.querySelectorAll(revealSelectors.join(", "))),
+  ].filter((el) => {
+    if (!(el instanceof HTMLElement)) return false;
+    if (el.classList.contains("reveal-on-scroll")) return false;
+    if (el.closest("#preloader, #popup, .popup-overlay-ads")) return false;
+    return true;
+  });
+
+  if (!targets.length) return;
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion) {
+    targets.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach((el) => {
+      el.classList.add("reveal-on-scroll");
+      el.classList.add("is-visible");
+    });
+    return;
+  }
+
+  targets.forEach((el, index) => {
+    el.classList.add("reveal-on-scroll");
+    const delayStep = index % 4;
+    if (delayStep > 0) {
+      el.classList.add(`reveal-delay-${delayStep}`);
+    }
+  });
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    {
+      threshold: 0.12,
+      rootMargin: "0px 0px -10% 0px",
+    }
+  );
+
+  targets.forEach((el) => observer.observe(el));
+};
+
 // ==================== KHỞI TẠO CÁC TÍNH NĂNG CHUNG ====================
 const initApp = () => {
   updateHeaderScrollState();
@@ -56,22 +123,27 @@ const initApp = () => {
 
   // ==================== CHẾ ĐỘ NỀN TỐI (DARK MODE) ====================
   const toggleBtn = document.getElementById("themeToggle");
+  const applyThemeState = (isDark) => {
+    document.body.classList.toggle("dark", isDark);
+    syncBootstrapTheme(isDark);
+    if (toggleBtn) {
+      toggleBtn.textContent = isDark ? "\u2600\uFE0F" : "\uD83C\uDF19";
+    }
+  };
 
   if (toggleBtn) {
-    // Load lại trạng thái
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
-      toggleBtn.textContent = "☀️";
-    }
+    // Load lai trang thai
+    const isDarkSaved = localStorage.getItem("theme") === "dark";
+    applyThemeState(isDarkSaved);
 
     toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      const isDark = document.body.classList.contains("dark");
-      toggleBtn.textContent = isDark ? "☀️" : "🌙";
+      const isDark = !document.body.classList.contains("dark");
+      applyThemeState(isDark);
       localStorage.setItem("theme", isDark ? "dark" : "light");
     });
+  } else {
+    syncBootstrapTheme(document.body.classList.contains("dark"));
   }
-
   // ==================== XỬ LÝ PRELOADER ====================
   const preloader = document.getElementById("preloader");
   if (preloader) {
@@ -221,6 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initApp();
+  initSmoothReveal();
 });
 
 /* 

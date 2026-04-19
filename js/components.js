@@ -14,6 +14,13 @@ const NAV_ITEMS = [
   { href: "contact.html", label: "Liên hệ" },
 ];
 
+const TOP_BANNER_ITEMS = [
+  "Miễn phí giao hàng cho đơn từ 199K",
+  "Mở cửa mỗi ngày từ 07:00 đến 22:00",
+  "Ưu đãi thành viên mới: giảm 10% đơn đầu tiên",
+  "Đặt trước trên website để nhận nhanh tại quầy",
+];
+
 function getCurrentPage() {
   const path = window.location.pathname.replace(/\\/g, "/");
   return (path.split("/").pop() || "index.html").toLowerCase();
@@ -26,10 +33,20 @@ function renderHeaderComponent() {
     const activeAttrs = active ? ' class="is-active" aria-current="page"' : "";
     return `<li><a href="${href}"${activeAttrs}>${label}</a></li>`;
   }).join("");
+  const marqueeItems = TOP_BANNER_ITEMS.map(
+    (text) =>
+      `<span class="top-marquee__item">${text}</span><span class="top-marquee__dot" aria-hidden="true"></span>`
+  ).join("");
 
   return `
+    <div class="top-marquee" role="region" aria-label="Thông báo ưu đãi">
+      <div class="top-marquee__track">
+        <div class="top-marquee__group">${marqueeItems}</div>
+        <div class="top-marquee__group" aria-hidden="true">${marqueeItems}</div>
+      </div>
+    </div>
     <header class="header">
-      <div class="header-container">
+      <div class="header-container container-xxl px-3 px-md-4">
         <a href="index.html" class="logo" aria-label="GIBOR Coffee - Trang chủ">
           <img src="images/logo/logo.jpg" alt="GIBOR Coffee" />
           <span class="logo-text">
@@ -38,12 +55,12 @@ function renderHeaderComponent() {
         </a>
 
         <nav class="nav" aria-label="Điều hướng chính">
-          <ul class="nav-links">
+          <ul class="nav-links list-unstyled mb-0">
             ${navLinks}
           </ul>
         </nav>
 
-        <div class="header-actions">
+        <div class="header-actions d-flex align-items-center gap-2">
           <a href="login.html" class="icon-btn auth-btn" id="authLink">
             <i class="fas fa-user"></i>
             <span>Đăng nhập</span>
@@ -67,7 +84,7 @@ function renderHeaderComponent() {
 
 const FooterComponent = `
     <footer class="footer">
-      <div class="footer-container">
+      <div class="footer-container container-xxl">
         <div class="footer-col footer-brand">
           <a href="index.html" class="footer-brand-link" aria-label="GIBOR Coffee">
             <img src="images/logo/logo.jpg" alt="Logo GIBOR Coffee" />
@@ -131,7 +148,7 @@ const FooterComponent = `
         </div>
       </div>
 
-      <div class="footer-bottom">
+      <div class="footer-bottom d-flex flex-column flex-md-row justify-content-md-between align-items-md-center gap-2">
         <p>© 2026 GIBOR COFFEE. </p>
         <div class="footer-bottom-links">
           <a href="about.html">Về thương hiệu</a>

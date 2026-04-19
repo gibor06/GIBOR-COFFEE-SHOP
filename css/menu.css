@@ -646,13 +646,39 @@ body.dark .menu-card p {
   padding: 15px;
   text-align: center;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transition: 0.3s;
+  border: 1px solid rgba(194, 123, 67, 0.16);
+  transform: translateY(0) translateZ(0);
+  transition:
+    transform 460ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 460ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 320ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    background-color 320ms
+      var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
   position: relative;
+  will-change: transform, box-shadow;
+  isolation: isolate;
 }
 
-/* Hiệu ứng khi rê chuột vào card */
-.menu-card:hover {
-  transform: translateY(-6px);
+.menu-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0) 42%,
+    rgba(194, 123, 67, 0.08) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms
+    var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.menu-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* =========================================
@@ -663,6 +689,13 @@ body.dark .menu-card p {
   height: 400px;
   object-fit: cover;
   border-radius: 10px;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  will-change: transform, filter;
+  transition:
+    transform 700ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    filter 420ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 420ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 /* =========================================
@@ -672,6 +705,7 @@ body.dark .menu-card p {
   margin: 12px 0 5px;
   color: #5a2d1a;
   font-size: 18px;
+  transition: color 300ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 /* =========================================
@@ -680,6 +714,7 @@ body.dark .menu-card p {
 .menu-card p {
   font-size: 14px;
   color: #777;
+  transition: color 300ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 /* =========================================
@@ -690,6 +725,65 @@ body.dark .menu-card p {
   margin-top: 8px;
   font-weight: bold;
   color: #c27b43;
+  transition:
+    color 300ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 300ms var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menu-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 18px 36px rgba(58, 34, 22, 0.2);
+    border-color: rgba(194, 123, 67, 0.36);
+  }
+
+  .menu-card:hover::after {
+    opacity: 1;
+  }
+
+  .menu-card:hover img {
+    transform: translateZ(0) scale(1.06);
+    filter: saturate(1.08) contrast(1.03);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .menu-card:hover h4 {
+    color: #4a2b1c;
+  }
+
+  .menu-card:hover p {
+    color: #664a36;
+  }
+
+  .menu-card:hover .price {
+    color: #ad6b34;
+    transform: translateY(-1px);
+  }
+
+  body.dark .menu-card:hover {
+    border-color: rgba(240, 215, 189, 0.42);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+  }
+
+  body.dark .menu-card:hover img {
+    filter: saturate(1.08) brightness(1.05) contrast(1.02);
+  }
+
+  body.dark .menu-card:hover h4 {
+    color: #ffe2c6;
+  }
+
+  body.dark .menu-card:hover p {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  body.dark .menu-card:hover .price {
+    color: #ffd2a8;
+  }
+}
+
+.menu-card:active {
+  transform: translateY(-3px) scale(0.998);
 }
 
 /* Nhãn dán best seller */
@@ -713,13 +807,13 @@ body.dark .menu-card p {
   opacity: 1;
   visibility: visible;
 
-  animation: bestSellerPulse 2.5s ease-in-out infinite;
+  animation: bestSellerPulse 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 .badge .icon {
   font-size: 14px;
   display: inline-block;
-  animation: fireWiggle 1.5s infinite;
+  animation: fireWiggle 1.9s ease-in-out infinite;
 }
 
 /* Animation Best Seller */
@@ -729,8 +823,8 @@ body.dark .menu-card p {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
   }
   50% {
-    transform: rotate(-8deg) scale(1.08);
-    box-shadow: 0 6px 14px rgba(255, 87, 34, 0.6);
+    transform: rotate(-8deg) scale(1.05);
+    box-shadow: 0 8px 20px rgba(255, 87, 34, 0.42);
   }
   100% {
     transform: rotate(-8deg) scale(1);
@@ -1002,8 +1096,16 @@ body.dark .menu-card p {
     padding: 72px 0 24px;
     color: #f3ece6;
     background:
-      radial-gradient(circle at 10% 10%, rgba(212, 163, 115, 0.2), transparent 42%),
-      radial-gradient(circle at 90% 0%, rgba(255, 255, 255, 0.08), transparent 28%),
+      radial-gradient(
+        circle at 10% 10%,
+        rgba(212, 163, 115, 0.2),
+        transparent 42%
+      ),
+      radial-gradient(
+        circle at 90% 0%,
+        rgba(255, 255, 255, 0.08),
+        transparent 28%
+      ),
       linear-gradient(160deg, #25160f 0%, #3a2418 45%, #4b2c20 100%);
     overflow: hidden;
   }

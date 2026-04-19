@@ -12,7 +12,7 @@
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-15px) rotate(1deg);
+    transform: translateY(-10px) rotate(0.6deg);
   }
   100% {
     transform: translateY(0px) rotate(0deg);
@@ -68,7 +68,8 @@
   color: var(--white);
   position: relative;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform;
 }
 
 /* Lớp lấp lánh chạy qua banner */
@@ -86,7 +87,7 @@
     transparent
   );
   transform: skewX(-25deg);
-  animation: shine 4s infinite;
+  animation: shine 5.5s linear infinite;
 }
 
 .promo-banner::after {
@@ -117,7 +118,7 @@
   text-transform: uppercase;
   margin-bottom: 20px;
   display: inline-block;
-  animation: bounce 2s infinite;
+  animation: bounce 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .promo-content h2 {
@@ -145,12 +146,16 @@
   border-radius: 25px;
   font-weight: 700;
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-cta:hover {
   background: var(--white);
   transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
 .promo-image {
@@ -160,7 +165,8 @@
   background-size: cover;
   background-position: center;
   clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
-  transition: 0.5s;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
 .promo-banner:hover .promo-image {
@@ -221,7 +227,8 @@ body.dark .intro .featured-icons i {
 .hero-content {
   position: relative;
   z-index: 2;
-  animation: fadeIn 1.5s ease-out;
+  animation: fadeIn 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 
 .hero-content h1 {
